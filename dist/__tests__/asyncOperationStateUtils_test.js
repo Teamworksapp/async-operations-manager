@@ -17,7 +17,7 @@ var initialState = {
   descriptors: {},
   operations: {}
 };
-describe('asyncOperationStateUtils', function () {
+describe.only('asyncOperationStateUtils', function () {
   describe('updateAsyncOperationDescriptor', function () {
     var stub;
     var state;
@@ -166,7 +166,7 @@ describe('asyncOperationStateUtils', function () {
 
       _asyncOperationManagerState.asyncOperationManagerState.clearState();
     });
-    it('should return an initial read asyncOperation', function () {
+    it.only('should return an initial read asyncOperation', function () {
       var asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['personId'],
@@ -186,7 +186,8 @@ describe('asyncOperationStateUtils', function () {
         fetchStatus: 'NULL',
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
-        lastDataStatusTime: 0
+        lastDataStatusTime: 0,
+        operationKey: 'FETCH_PERSON_DATA_111'
       });
       (0, _chai.expect)(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -208,7 +209,8 @@ describe('asyncOperationStateUtils', function () {
 
       (0, _chai.expect)(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
-        lastFetchStatusTime: 0
+        lastFetchStatusTime: 0,
+        operationKey: 'UPDATE_PERSON_DATA_111'
       });
       (0, _chai.expect)(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
