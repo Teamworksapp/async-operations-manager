@@ -11,7 +11,7 @@ const initialState = {
   operations: {},
 };
 
-describe('asyncOperationStateUtils', () => {
+describe.only('asyncOperationStateUtils', () => {
   describe('updateAsyncOperationDescriptor', () => {
     let stub;
     let state;
@@ -162,7 +162,7 @@ describe('asyncOperationStateUtils', () => {
       asyncOperationManagerState.clearState();
     });
 
-    it('should return an initial read asyncOperation', () => {
+    it.only('should return an initial read asyncOperation', () => {
       const asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['personId'],
@@ -181,6 +181,7 @@ describe('asyncOperationStateUtils', () => {
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
+        operationKey: 'FETCH_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -202,6 +203,7 @@ describe('asyncOperationStateUtils', () => {
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         lastFetchStatusTime: 0,
+        operationKey: 'UPDATE_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });

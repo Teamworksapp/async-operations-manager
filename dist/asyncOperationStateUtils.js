@@ -50,7 +50,13 @@ var updateAsyncOperationDescriptor = function updateAsyncOperationDescriptor(sta
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
 
 
-var getAsyncOperation = function getAsyncOperation(state, asyncOperationKey, asyncOperationDescriptor, asyncOperationParams, fieldsToAdd) {
+var getAsyncOperation = function getAsyncOperation(_ref) {
+  var state = _ref.state,
+      asyncOperationStep = _ref.asyncOperationStep,
+      asyncOperationKey = _ref.asyncOperationKey,
+      asyncOperationDescriptor = _ref.asyncOperationDescriptor,
+      asyncOperationParams = _ref.asyncOperationParams,
+      fieldsToAdd = _ref.fieldsToAdd;
   var operations = state.operations,
       descriptors = state.descriptors;
   var parentAsyncOperation;
@@ -81,7 +87,14 @@ var getAsyncOperation = function getAsyncOperation(state, asyncOperationKey, asy
         parentAsyncOperationKey = _getAsyncOperationInf.asyncOperationKey;
 
     if (parentAsyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ) {
-      parentAsyncOperation = getAsyncOperation(state, parentAsyncOperationKey, parentAsyncOperationDescriptor, asyncOperationParams, fieldsToAddToAction);
+      parentAsyncOperation = getAsyncOperation({
+        state: state,
+        asyncOperationStep: asyncOperationStep,
+        asyncOperationKey: parentAsyncOperationKey,
+        asyncOperationDescriptor: parentAsyncOperationDescriptor,
+        asyncOperationParams: asyncOperationParams,
+        fieldsToAdd: fieldsToAddToAction
+      });
     }
   }
 
@@ -90,10 +103,10 @@ var getAsyncOperation = function getAsyncOperation(state, asyncOperationKey, asy
       config.logger.verboseLoggingCallback("asyncOperation not found with given key: ".concat(asyncOperationKey, ". Defaulting to an initial asyncOperation"));
     }
 
-    return asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, fieldsToAddToAction, parentAsyncOperation) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, fieldsToAddToAction, parentAsyncOperation);
+    return asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   }
 
-  if (asyncOperationDescriptor.invalidatingOperationsDescriptorIds) {
+  if (asyncOperationDescriptor.invalidatingOperationsDescriptorIds && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION) {
     // we want to detect whether to invalidate the async operation if an async operation has been found
     var invalidateOperation = false;
     (0, _lodash.forEach)(asyncOperationDescriptor.invalidatingOperationsDescriptorIds, function (descriptorId) {
@@ -107,7 +120,14 @@ var getAsyncOperation = function getAsyncOperation(state, asyncOperationKey, asy
           invalidatingAsyncOperationDescriptor = _getAsyncOperationInf2.asyncOperationDescriptor,
           invalidatingAsyncOperationKey = _getAsyncOperationInf2.asyncOperationKey;
 
-      var invalidatingOperation = getAsyncOperation(state, invalidatingAsyncOperationKey, invalidatingAsyncOperationDescriptor, asyncOperationParams, fieldsToAddToAction); // Handle invalidating operations with write or read operations.
+      var invalidatingOperation = getAsyncOperation({
+        state: state,
+        asyncOperationStep: asyncOperationStep,
+        invalidatingAsyncOperationKey: invalidatingAsyncOperationKey,
+        asyncOperationDescriptor: invalidatingAsyncOperationDescriptor,
+        asyncOperationParams: asyncOperationParams,
+        fieldsToAdd: fieldsToAddToAction
+      }); // Handle invalidating operations with write or read operations.
 
       invalidateOperation = invalidatingAsyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? invalidatingOperation.lastDataStatusTime.valueOf() >= asyncOperation.lastDataStatusTime.valueOf() : invalidatingOperation.lastFetchStatusTime.valueOf() >= asyncOperation.lastFetchStatusTime.valueOf();
 
@@ -119,7 +139,7 @@ var getAsyncOperation = function getAsyncOperation(state, asyncOperationKey, asy
     });
 
     if (invalidateOperation) {
-      return (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, fieldsToAddToAction);
+      return (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction);
     }
   } // We want to determine whether or not to use that parentAsyncOperation metaData based on the
   // newness of it's data in comparison to the asyncOperation
@@ -152,10 +172,10 @@ var updateAsyncOperation = function updateAsyncOperation(state, asyncOperationKe
 };
 
 var bulkUpdateAsyncOperations = function bulkUpdateAsyncOperations(state, asyncOperationsList) {
-  return (0, _lodash.reduce)(asyncOperationsList, function (accumulator, _ref) {
-    var asyncOperationKey = _ref.asyncOperationKey,
-        asyncOperation = _ref.asyncOperation,
-        asyncOperationDescriptor = _ref.asyncOperationDescriptor;
+  return (0, _lodash.reduce)(asyncOperationsList, function (accumulator, _ref2) {
+    var asyncOperationKey = _ref2.asyncOperationKey,
+        asyncOperation = _ref2.asyncOperation,
+        asyncOperationDescriptor = _ref2.asyncOperationDescriptor;
     return updateAsyncOperation(accumulator, asyncOperationKey, asyncOperation, asyncOperationDescriptor);
   }, state);
 };

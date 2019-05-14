@@ -4,6 +4,8 @@ var _chai = require("chai");
 
 var _asyncOperationManagerUtils = require("../asyncOperationManagerUtils");
 
+var _constants = require("../constants");
+
 var _asyncOperationManagerState = require("../asyncOperationManagerState");
 
 /* eslint-env jest */
@@ -85,11 +87,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'READ'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'BEGIN_ASYNC_OPERATION', 'FETCH_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'FETCH_PERSON_DATA_111.fetchStatus': 'PENDING'
+          'operations.FETCH_PERSON_DATA_111.fetchStatus': 'PENDING'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing begun read async operation');
       });
@@ -112,11 +114,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'READ'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'RESOLVE_ASYNC_OPERATION', 'FETCH_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'FETCH_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL'
+          'operations.FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing successful read async operation');
       });
@@ -139,11 +141,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'READ'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'REJECT_ASYNC_OPERATION', 'FETCH_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'FETCH_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'FETCH_PERSON_DATA_111.fetchStatus': 'FAILED'
+          'operations.FETCH_PERSON_DATA_111.fetchStatus': 'FAILED'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing rejected async operation');
       });
@@ -155,11 +157,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'WRITE'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'BEGIN_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING'
+          'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing pending write async operation');
       });
@@ -181,11 +183,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'WRITE'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'RESOLVE_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL'
+          'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing successful write async operation');
       });
@@ -207,11 +209,11 @@ describe('asyncOperationManagerUtils', function () {
           requiredParams: ['personId'],
           operationType: 'WRITE'
         });
-        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, 'REJECT_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', {
+        var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', {
           personId: 111
         });
         (0, _chai.expect)(newOperationsState).to.nested.include({
-          'UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED'
+          'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED'
         });
         (0, _chai.expect)(newOperationsState).to.matchSnapshot('updated state showing failed write async operation');
       });

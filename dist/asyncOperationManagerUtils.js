@@ -60,7 +60,13 @@ var registerAsyncOperationDescriptors = function registerAsyncOperationDescripto
 
 exports.registerAsyncOperationDescriptors = registerAsyncOperationDescriptors;
 
-var getAsyncOperation = function getAsyncOperation(state, descriptorId, params, otherFields) {
+var getAsyncOperation = function getAsyncOperation(_ref) {
+  var state = _ref.state,
+      asyncOperationStep = _ref.asyncOperationStep,
+      descriptorId = _ref.descriptorId,
+      params = _ref.params,
+      otherFields = _ref.otherFields;
+
   var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
       asyncOperationDescriptor = _getAsyncOperationInf.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf.asyncOperationParams,
@@ -70,7 +76,14 @@ var getAsyncOperation = function getAsyncOperation(state, descriptorId, params, 
 
   var newState = _asyncOperationManagerState.asyncOperationManagerState.setState(state);
 
-  return _asyncOperationStateUtils.default.getAsyncOperation(newState, asyncOperationKey, asyncOperationDescriptor, asyncOperationParams, otherFields);
+  return _asyncOperationStateUtils.default.getAsyncOperation({
+    state: newState,
+    asyncOperationStep: asyncOperationStep,
+    asyncOperationKey: asyncOperationKey,
+    asyncOperationDescriptor: asyncOperationDescriptor,
+    asyncOperationParams: asyncOperationParams,
+    fieldsToAdd: otherFields
+  });
 };
 
 exports.getAsyncOperation = getAsyncOperation;
@@ -82,7 +95,11 @@ var shouldRunOperation = function shouldRunOperation(descriptorId, params) {
       asyncOperationDescriptor = _getAsyncOperationInf2.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf2.asyncOperationParams;
 
-  var asyncOperation = getAsyncOperation(state, descriptorId, asyncOperationParams);
+  var asyncOperation = getAsyncOperation({
+    state: state,
+    descriptorId: descriptorId,
+    asyncOperationParams: asyncOperationParams
+  });
 
   if (asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ && asyncOperation.fetchStatus !== _constants.FETCH_STATUS.NULL) {
     return Date.now() - asyncOperation.lastFetchStatusTime >= asyncOperationDescriptor.minCacheTime;
@@ -126,10 +143,17 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
   // to the library state.
 
 
-  var asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
+  debugger;
+  var asyncOperationToTranform = getAsyncOperation({
+    state: newState,
+    asyncOperationStep: asyncOperationStep,
+    descriptorId: descriptorId,
+    params: asyncOperationParams,
+    otherFields: otherFields
+  });
   var newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
   newState = _asyncOperationStateUtils.default.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
-  return _asyncOperationManagerState.asyncOperationManagerState.setState(newState).operations;
+  return _asyncOperationManagerState.asyncOperationManagerState.setState(newState);
 };
 
 exports.getStateForOperationAfterStep = getStateForOperationAfterStep;

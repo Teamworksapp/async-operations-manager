@@ -8,6 +8,8 @@ var _asyncOperationStateUtils = _interopRequireDefault(require("../asyncOperatio
 
 var _asyncOperationManagerState = require("../asyncOperationManagerState");
 
+var _constants = require("../constants");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-env jest */
@@ -171,8 +173,13 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, {
-        personId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.deep.include({
@@ -190,8 +197,13 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'WRITE'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'UPDATE_PERSON_DATA_111', asyncOperationDescriptor, {
-        personId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationKey: 'UPDATE_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.deep.include({
@@ -220,8 +232,14 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, {
-        personId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
@@ -247,8 +265,14 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, {
-        personId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
@@ -282,7 +306,7 @@ describe('asyncOperationStateUtils', function () {
           }
         }
       };
-      var fetchPersonDataAsyncOperationDescriptor = {
+      var asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['personId'],
         operationType: 'READ',
@@ -290,8 +314,14 @@ describe('asyncOperationStateUtils', function () {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', fetchPersonDataAsyncOperationDescriptor, {
-        personId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
@@ -346,16 +376,22 @@ describe('asyncOperationStateUtils', function () {
           }
         }
       };
-      var fetchPersonDataAsyncOperationDescriptor = {
+      var asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['orgId', 'personId'],
         operationType: 'READ',
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA_FOR_ORG'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', fetchPersonDataAsyncOperationDescriptor, {
-        personId: 111,
-        orgId: 22
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          personId: 111,
+          orgId: 22
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
@@ -396,15 +432,21 @@ describe('asyncOperationStateUtils', function () {
           }
         }
       };
-      var fetchAppointmentDataAsyncOperationDescriptor = {
+      var asyncOperationDescriptor = {
         descriptorId: 'FETCH_APPOINTMENT_DATA',
         requiredParams: ['appointmentId'],
         operationType: 'READ',
         invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA']
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_APPOINTMENT_DATA_111', fetchAppointmentDataAsyncOperationDescriptor, {
-        appointmentId: 111
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_APPOINTMENT_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          appointmentId: 111
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
@@ -448,15 +490,21 @@ describe('asyncOperationStateUtils', function () {
           }
         }
       };
-      var fetchAppointmentDataAsyncOperationDescriptor = {
+      var asyncOperationDescriptor = {
         descriptorId: 'FETCH_CALENDAR_DATA',
         requiredParams: ['orgId'],
         operationType: 'READ',
         invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation(state, 'FETCH_APPOINTMENT_DATA_111', fetchAppointmentDataAsyncOperationDescriptor, {
-        orgId: 33
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_APPOINTMENT_DATA_111',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          orgId: 33
+        }
       });
 
       (0, _chai.expect)(asyncOperation).to.be.an('object');
