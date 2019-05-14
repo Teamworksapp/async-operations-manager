@@ -33,6 +33,7 @@ Object {
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
+  "operationKey": "FETCH_APPOINTMENT_DATA_111",
 }
 `;
 
@@ -45,6 +46,7 @@ Object {
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
+  "operationKey": "FETCH_APPOINTMENT_DATA_111",
   "orgId": 33,
 }
 `;
@@ -106,6 +108,7 @@ Object {
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
+  "operationKey": "FETCH_PERSON_DATA_111",
   "personId": 111,
 }
 `;
@@ -116,6 +119,7 @@ Object {
   "fetchStatus": "NULL",
   "lastFetchStatusTime": 0,
   "message": null,
+  "operationKey": "UPDATE_PERSON_DATA_111",
   "personId": 111,
 }
 `;

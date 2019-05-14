@@ -61,7 +61,13 @@ const registerAsyncOperationDescriptors = (asyncOperationDescriptors, ...otherDe
   return asyncOperationManagerState.setState(newState);
 };
 
-const getAsyncOperation = (state, descriptorId, params, otherFields) => {
+const getAsyncOperation = ({
+  state,
+  asyncOperationStep,
+  descriptorId,
+  params,
+  otherFields,
+}) => {
   const {
     asyncOperationDescriptor,
     asyncOperationParams,
@@ -72,7 +78,14 @@ const getAsyncOperation = (state, descriptorId, params, otherFields) => {
   // to the library state.
   const newState = asyncOperationManagerState.setState(state);
 
-  return asyncOperationStateUtils.getAsyncOperation(newState, asyncOperationKey, asyncOperationDescriptor, asyncOperationParams, otherFields);
+  return asyncOperationStateUtils.getAsyncOperation({
+    state: newState,
+    asyncOperationStep,
+    asyncOperationKey,
+    asyncOperationDescriptor,
+    asyncOperationParams,
+    fieldsToAdd: otherFields,
+  });
 };
 
 const shouldRunOperation = (descriptorId, params) => {
@@ -83,7 +96,11 @@ const shouldRunOperation = (descriptorId, params) => {
     asyncOperationParams,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-  const asyncOperation = getAsyncOperation(state, descriptorId, asyncOperationParams);
+  const asyncOperation = getAsyncOperation({
+    state,
+    descriptorId,
+    asyncOperationParams,
+  });
 
   if (asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ && asyncOperation.fetchStatus !== FETCH_STATUS.NULL) {
     return (Date.now() - asyncOperation.lastFetchStatusTime) >= asyncOperationDescriptor.minCacheTime;
@@ -134,11 +151,20 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
   // in case operation/descriptor state is initialized in userland we pass that through
   // to the library state.
 
-  const asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
+  debugger;
+
+  const asyncOperationToTranform = getAsyncOperation({
+    state: newState,
+    asyncOperationStep,
+    descriptorId,
+    params: asyncOperationParams,
+    otherFields,
+  });
+
   const newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
 
   newState = asyncOperationStateUtils.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
-  return asyncOperationManagerState.setState(newState).operations;
+  return asyncOperationManagerState.setState(newState);
 };
 
 export {

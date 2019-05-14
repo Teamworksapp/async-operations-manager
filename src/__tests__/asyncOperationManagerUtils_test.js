@@ -7,6 +7,8 @@ import {
   getStateForOperationAfterStep,
 } from '../asyncOperationManagerUtils';
 
+import { ASYNC_OPERATION_STEPS } from '../constants';
+
 import {
   asyncOperationManagerState,
 } from '../asyncOperationManagerState';
@@ -93,8 +95,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'BEGIN_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'PENDING' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'PENDING' });
         expect(newOperationsState).to.matchSnapshot('updated state showing begun read async operation');
       });
 
@@ -121,8 +123,9 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'RESOLVE_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
         expect(newOperationsState).to.matchSnapshot('updated state showing successful read async operation');
       });
 
@@ -149,8 +152,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'REJECT_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'FAILED' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'FAILED' });
         expect(newOperationsState).to.matchSnapshot('updated state showing rejected async operation');
       });
     });
@@ -165,8 +168,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'BEGIN_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING' });
         expect(newOperationsState).to.matchSnapshot('updated state showing pending write async operation');
       });
   
@@ -192,8 +195,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'RESOLVE_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
         expect(newOperationsState).to.matchSnapshot('updated state showing successful write async operation');
       });
 
@@ -219,8 +222,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'REJECT_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED' });
         expect(newOperationsState).to.matchSnapshot('updated state showing failed write async operation');
       });
     });
