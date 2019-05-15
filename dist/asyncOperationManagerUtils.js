@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shouldRunOperation = exports.getStateForOperationAfterStep = exports.registerAsyncOperationDescriptors = exports.getAsyncOperation = exports.setAsyncOperationsManagerState = exports.clearAsyncOperationsManagerState = exports.getAsyncOperationsManagerState = void 0;
+exports.shouldRunOperation = exports.getStateForOperationAfterStep = exports.registerAsyncOperationDescriptors = exports.invalidateAsyncOperationByKey = exports.getAsyncOperation = exports.setAsyncOperationsManagerState = exports.clearAsyncOperationsManagerState = exports.getAsyncOperationsManagerState = void 0;
 
 var _lodash = require("lodash");
 
@@ -59,6 +59,16 @@ var registerAsyncOperationDescriptors = function registerAsyncOperationDescripto
 };
 
 exports.registerAsyncOperationDescriptors = registerAsyncOperationDescriptors;
+
+var invalidateAsyncOperationByKey = function invalidateAsyncOperationByKey(asyncOperationKey, descriptorId) {
+  var state = getAsyncOperationsManagerState();
+
+  var newState = _asyncOperationStateUtils.default.setInvalidatedOperationByKeyState(state, asyncOperationKey, descriptorId);
+
+  return _asyncOperationManagerState.asyncOperationManagerState.setState(newState);
+};
+
+exports.invalidateAsyncOperationByKey = invalidateAsyncOperationByKey;
 
 var getAsyncOperation = function getAsyncOperation(_ref) {
   var state = _ref.state,

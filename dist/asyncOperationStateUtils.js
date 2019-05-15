@@ -61,6 +61,13 @@ var getLatestOperationByDescriptorId = function getLatestOperationByDescriptorId
       return acc;
     }
   }, {});
+};
+
+var setInvalidatedOperationByKeyState = function setInvalidatedOperationByKeyState(state, asyncOperationKey, descriptorId) {
+  var asyncOperationDescriptor = state.descriptors[descriptorId];
+  return _objectSpread({}, state, {
+    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey)))
+  });
 }; // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
@@ -192,7 +199,8 @@ var _default = {
   updateAsyncOperation: updateAsyncOperation,
   bulkUpdateAsyncOperations: bulkUpdateAsyncOperations,
   getAsyncOperationFromState: getAsyncOperationFromState,
-  getLatestOperationByDescriptorId: getLatestOperationByDescriptorId
+  getLatestOperationByDescriptorId: getLatestOperationByDescriptorId,
+  setInvalidatedOperationByKeyState: setInvalidatedOperationByKeyState
 };
 exports.default = _default;
 //# sourceMappingURL=asyncOperationStateUtils.js.map

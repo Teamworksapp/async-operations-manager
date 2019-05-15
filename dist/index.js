@@ -35,6 +35,7 @@ var _default = {
   setAsyncOperationsManagerState: _asyncOperationManagerUtils.setAsyncOperationsManagerState,
   // Operation & Decriptor API //
   getAsyncOperation: _asyncOperationManagerUtils.getAsyncOperation,
+  invalidateAsyncOperationByKey: _asyncOperationManagerUtils.invalidateAsyncOperationByKey,
   getStateForOperationAfterStep: _asyncOperationManagerUtils.getStateForOperationAfterStep,
   registerAsyncOperationDescriptors: _asyncOperationManagerUtils.registerAsyncOperationDescriptors,
   shouldRunOperation: _asyncOperationManagerUtils.shouldRunOperation,
