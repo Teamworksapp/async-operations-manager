@@ -75,7 +75,7 @@ var getAsyncOperation = function getAsyncOperation(_ref) {
 
   var newState = _asyncOperationManagerState.asyncOperationManagerState.setState(state);
 
-  return _asyncOperationStateUtils.default.getAsyncOperation({
+  return _asyncOperationStateUtils.default.getAsyncOperationFromState({
     state: newState,
     asyncOperationKey: asyncOperationKey,
     asyncOperationDescriptor: asyncOperationDescriptor,

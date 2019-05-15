@@ -80,6 +80,18 @@ describe('asyncOperationManagerUtils', function () {
       });
       global.Date.now = dateNowStub;
     });
+    it('should return an object containing only operations and descriptors keys', function () {
+      (0, _asyncOperationManagerUtils.registerAsyncOperationDescriptors)({
+        descriptorId: 'FETCH_PERSON_DATA',
+        requiredParams: ['personId'],
+        operationType: 'READ'
+      });
+      var newOperationsState = (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', {
+        personId: 111
+      });
+      (0, _chai.expect)(newOperationsState).to.have.all.keys('operations', 'descriptors');
+      (0, _chai.expect)(newOperationsState).to.matchSnapshot('state with only operations and descriptors keys');
+    });
     describe('READ async operations', function () {
       it('should update state to read show async operation as pending state from initial state', function () {
         (0, _asyncOperationManagerUtils.registerAsyncOperationDescriptors)({

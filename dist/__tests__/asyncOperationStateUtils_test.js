@@ -159,7 +159,7 @@ describe('asyncOperationStateUtils', function () {
       (0, _chai.expect)(operations).to.matchSnapshot('state with multiple asyncOperations');
     });
   });
-  describe('getAsyncOperation', function () {
+  describe('getAsyncOperationFromState', function () {
     var state;
     beforeEach(function () {
       state = initialState;
@@ -173,7 +173,7 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
         asyncOperationDescriptor: asyncOperationDescriptor,
@@ -198,7 +198,7 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'WRITE'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationKey: 'UPDATE_PERSON_DATA_111',
         asyncOperationDescriptor: asyncOperationDescriptor,
@@ -234,7 +234,7 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -267,7 +267,7 @@ describe('asyncOperationStateUtils', function () {
         operationType: 'READ'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -316,7 +316,7 @@ describe('asyncOperationStateUtils', function () {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -385,7 +385,7 @@ describe('asyncOperationStateUtils', function () {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA_FOR_ORG'
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -441,7 +441,7 @@ describe('asyncOperationStateUtils', function () {
         invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA']
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_APPOINTMENT_DATA_111',
@@ -499,7 +499,7 @@ describe('asyncOperationStateUtils', function () {
         invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_CALENDAR_DATA_33',
@@ -557,7 +557,7 @@ describe('asyncOperationStateUtils', function () {
         invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
       };
 
-      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperationFromState({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_CALENDAR_DATA_33',

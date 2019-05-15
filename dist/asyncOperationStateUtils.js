@@ -66,7 +66,7 @@ var getLatestOperationByDescriptorId = function getLatestOperationByDescriptorId
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
 
 
-var getAsyncOperation = function getAsyncOperation(_ref) {
+var getAsyncOperationFromState = function getAsyncOperationFromState(_ref) {
   var state = _ref.state,
       asyncOperationKey = _ref.asyncOperationKey,
       asyncOperationDescriptor = _ref.asyncOperationDescriptor,
@@ -102,7 +102,7 @@ var getAsyncOperation = function getAsyncOperation(_ref) {
         parentAsyncOperationKey = _getAsyncOperationInf.asyncOperationKey;
 
     if (parentAsyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ) {
-      parentAsyncOperation = getAsyncOperation({
+      parentAsyncOperation = getAsyncOperationFromState({
         state: state,
         asyncOperationKey: parentAsyncOperationKey,
         asyncOperationDescriptor: parentAsyncOperationDescriptor,
@@ -191,7 +191,8 @@ var _default = {
   updateAsyncOperationDescriptor: updateAsyncOperationDescriptor,
   updateAsyncOperation: updateAsyncOperation,
   bulkUpdateAsyncOperations: bulkUpdateAsyncOperations,
-  getAsyncOperation: getAsyncOperation
+  getAsyncOperationFromState: getAsyncOperationFromState,
+  getLatestOperationByDescriptorId: getLatestOperationByDescriptorId
 };
 exports.default = _default;
 //# sourceMappingURL=asyncOperationStateUtils.js.map
