@@ -3,6 +3,7 @@ lib/
 node_modules/
 unit-tests/
 !unit-tests/setupTestFramework
+dist/__tests__
 
 *~
 .DS_Store
