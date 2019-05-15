@@ -1,6 +1,6 @@
 
 // TODO: JSDocify every function
-import { pick, forEach, reduce, includes } from 'lodash';
+import { pick, forEach, reduce } from 'lodash';
 import PropTypes from 'prop-types';
 
 import asyncOperationManagerConfig from './config';
@@ -72,7 +72,7 @@ const getLatestOperationByDescriptorId = (state, descriptorId) => {
 // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
-const getAsyncOperation = ({
+const getAsyncOperationFromState = ({
   state,
   asyncOperationKey,
   asyncOperationDescriptor,
@@ -111,7 +111,7 @@ const getAsyncOperation = ({
     } = getAsyncOperationInfo(descriptors, asyncOperationDescriptor.parentOperationDescriptorId, asyncOperationParams);
 
     if (parentAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ) {
-      parentAsyncOperation = getAsyncOperation({
+      parentAsyncOperation = getAsyncOperationFromState({
         state,
         asyncOperationKey: parentAsyncOperationKey,
         asyncOperationDescriptor: parentAsyncOperationDescriptor,
@@ -210,5 +210,6 @@ export default {
   updateAsyncOperation,
   bulkUpdateAsyncOperations,
 
-  getAsyncOperation,
+  getAsyncOperationFromState,
+  getLatestOperationByDescriptorId,
 };

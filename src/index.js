@@ -5,7 +5,6 @@ import {
 
   getAsyncOperation,
   registerAsyncOperationDescriptors,
-  getAsyncOperationDescriptor,
   getStateForOperationAfterStep,
   
   shouldRunOperation,
@@ -41,7 +40,6 @@ export default {
 
   // Operation & Decriptor API //
   getAsyncOperation,
-  getAsyncOperationDescriptor,
   getStateForOperationAfterStep,
   registerAsyncOperationDescriptors,
   shouldRunOperation,

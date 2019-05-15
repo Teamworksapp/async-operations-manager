@@ -155,7 +155,7 @@ describe('asyncOperationStateUtils', () => {
     });
   });
 
-  describe('getAsyncOperation', () => {
+  describe('getAsyncOperationFromState', () => {
     let state;
     beforeEach(() => {
       state = initialState;
@@ -169,7 +169,7 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
         asyncOperationDescriptor,
@@ -193,7 +193,7 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'WRITE',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationKey: 'UPDATE_PERSON_DATA_111',
         asyncOperationDescriptor,
@@ -229,7 +229,7 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -262,7 +262,7 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -311,7 +311,7 @@ describe('asyncOperationStateUtils', () => {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -381,7 +381,7 @@ describe('asyncOperationStateUtils', () => {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA_FOR_ORG',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_PERSON_DATA_111',
@@ -436,7 +436,7 @@ describe('asyncOperationStateUtils', () => {
         invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA'],
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_APPOINTMENT_DATA_111',
@@ -494,7 +494,7 @@ describe('asyncOperationStateUtils', () => {
         invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA'],
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_CALENDAR_DATA_33',
@@ -552,7 +552,7 @@ describe('asyncOperationStateUtils', () => {
         invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA'],
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation({
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
         state,
         asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
         asyncOperationKey: 'FETCH_CALENDAR_DATA_33',

@@ -77,7 +77,7 @@ const getAsyncOperation = ({
   // to the library state.
   const newState = asyncOperationManagerState.setState(state);
 
-  return asyncOperationStateUtils.getAsyncOperation({
+  return asyncOperationStateUtils.getAsyncOperationFromState({
     state: newState,
     asyncOperationKey,
     asyncOperationDescriptor,

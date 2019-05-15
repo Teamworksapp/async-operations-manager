@@ -200,3 +200,34 @@ Object {
   },
 }
 `;
+
+exports[`asyncOperationManagerUtils getStateForOperationAfterStep should return an object containing only operations and descriptors keys: state with only operations and descriptors keys 1`] = `
+Object {
+  "descriptors": Object {
+    "FETCH_PERSON_DATA": Object {
+      "alwaysImmutable": false,
+      "debug": false,
+      "descriptorId": "FETCH_PERSON_DATA",
+      "invalidatingOperationsDescriptorIds": null,
+      "maxCacheTime": 60000,
+      "minCacheTime": 5000,
+      "operationType": "READ",
+      "parentOperationDescriptorId": null,
+      "requiredParams": Array [
+        "personId",
+      ],
+    },
+  },
+  "operations": Object {
+    "FETCH_PERSON_DATA_111": Object {
+      "dataStatus": "ABSENT",
+      "descriptorId": "FETCH_PERSON_DATA",
+      "fetchStatus": "PENDING",
+      "lastDataStatusTime": 0,
+      "lastFetchStatusTime": 1530518207007,
+      "message": null,
+      "personId": 111,
+    },
+  },
+}
+`;

@@ -85,6 +85,20 @@ describe('asyncOperationManagerUtils', () => {
       global.Date.now = dateNowStub;
     });
 
+    it('should return an object containing only operations and descriptors keys', () => {
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_PERSON_DATA',
+          requiredParams: ['personId'],
+          operationType: 'READ',
+        },
+      );
+
+      const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+      expect(newOperationsState).to.have.all.keys('operations', 'descriptors');
+      expect(newOperationsState).to.matchSnapshot('state with only operations and descriptors keys');
+    });
+
     describe('READ async operations', () => {
       it('should update state to read show async operation as pending state from initial state', () => {
         registerAsyncOperationDescriptors(
