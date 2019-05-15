@@ -63,7 +63,6 @@ const registerAsyncOperationDescriptors = (asyncOperationDescriptors, ...otherDe
 
 const getAsyncOperation = ({
   state,
-  asyncOperationStep,
   descriptorId,
   params,
   otherFields,
@@ -80,7 +79,6 @@ const getAsyncOperation = ({
 
   return asyncOperationStateUtils.getAsyncOperation({
     state: newState,
-    asyncOperationStep,
     asyncOperationKey,
     asyncOperationDescriptor,
     asyncOperationParams,
@@ -151,11 +149,8 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
   // in case operation/descriptor state is initialized in userland we pass that through
   // to the library state.
 
-  debugger;
-
   const asyncOperationToTranform = getAsyncOperation({
     state: newState,
-    asyncOperationStep,
     descriptorId,
     params: asyncOperationParams,
     otherFields,

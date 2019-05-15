@@ -1,18 +1,20 @@
 
 // TODO: JSDocify every function
-import { pick, forEach, reduce } from 'lodash';
+import { pick, forEach, reduce, includes } from 'lodash';
 import PropTypes from 'prop-types';
 
 import asyncOperationManagerConfig from './config';
 
 import {
   ASYNC_OPERATION_TYPES,
-  ASYNC_OPERATION_STEPS,
+  // ASYNC_OPERATION_STEPS,
+  FETCH_STATUS,
   readAsyncOperationFieldsToPullFromParent,
 } from './constants';
 
 import {
   getAsyncOperationInfo,
+  getAsyncOperationDescriptor,
 } from './helpers';
 
 import {
@@ -53,12 +55,25 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
   };
 };
 
+const getLatestOperationByDescriptorId = (state, descriptorId) => {
+  return reduce(state.operations, (acc, operation) => {
+    if (operation.descriptorId === descriptorId) {
+      if (!acc) {
+        return operation;
+      }
+      if (acc.lastFetchStatusTime <= operation.lastFetchStatusTime) {
+        return operation;
+      }
+      return acc;
+    }
+  }, {});
+};
+
 // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
 const getAsyncOperation = ({
   state,
-  asyncOperationStep,
   asyncOperationKey,
   asyncOperationDescriptor,
   asyncOperationParams,
@@ -98,7 +113,6 @@ const getAsyncOperation = ({
     if (parentAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ) {
       parentAsyncOperation = getAsyncOperation({
         state,
-        asyncOperationStep,
         asyncOperationKey: parentAsyncOperationKey,
         asyncOperationDescriptor: parentAsyncOperationDescriptor,
         asyncOperationParams,
@@ -116,7 +130,7 @@ const getAsyncOperation = ({
       : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   }
 
-  if (asyncOperationDescriptor.invalidatingOperationsDescriptorIds && asyncOperationStep === ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION) {
+  if (asyncOperationDescriptor.invalidatingOperationsDescriptorIds) {
     // we want to detect whether to invalidate the async operation if an async operation has been found
     let invalidateOperation = false;
 
@@ -127,23 +141,15 @@ const getAsyncOperation = ({
         return false;
       }
 
-      const {
-        asyncOperationDescriptor: invalidatingAsyncOperationDescriptor,
-        asyncOperationKey: invalidatingAsyncOperationKey,
-      } = getAsyncOperationInfo(descriptors, descriptorId, asyncOperationParams);
-      const invalidatingOperation = getAsyncOperation({
-        state,
-        asyncOperationStep,
-        invalidatingAsyncOperationKey,
-        asyncOperationDescriptor: invalidatingAsyncOperationDescriptor,
-        asyncOperationParams,
-        fieldsToAdd: fieldsToAddToAction,
-      });
+      const invalidatingAsyncOperationDescriptor = getAsyncOperationDescriptor(descriptors, descriptorId);
+      const invalidatingOperation = getLatestOperationByDescriptorId(state, descriptorId);
 
+      if (invalidatingOperation.fetchStatus === FETCH_STATUS.SUCCESSFUL) {
       // Handle invalidating operations with write or read operations.
-      invalidateOperation = invalidatingAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ ?
-        invalidatingOperation.lastDataStatusTime.valueOf() >= asyncOperation.lastDataStatusTime.valueOf() :
-        invalidatingOperation.lastFetchStatusTime.valueOf() >= asyncOperation.lastFetchStatusTime.valueOf();
+        invalidateOperation = invalidatingAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ ?
+          invalidatingOperation.lastDataStatusTime.valueOf() >= asyncOperation.lastDataStatusTime.valueOf() :
+          invalidatingOperation.lastFetchStatusTime.valueOf() >= asyncOperation.lastFetchStatusTime.valueOf();
+      }
 
       if (invalidateOperation) {
         return false;
