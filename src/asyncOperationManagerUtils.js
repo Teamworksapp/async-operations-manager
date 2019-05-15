@@ -67,12 +67,12 @@ const invalidateAsyncOperationByKey = (asyncOperationKey, descriptorId) => {
   return asyncOperationManagerState.setState(newState);
 };
 
-const getAsyncOperation = ({
+const getAsyncOperation = (
   state,
   descriptorId,
   params,
   otherFields,
-}) => {
+) => {
   const {
     asyncOperationDescriptor,
     asyncOperationParams,
@@ -100,11 +100,11 @@ const shouldRunOperation = (descriptorId, params) => {
     asyncOperationParams,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-  const asyncOperation = getAsyncOperation({
+  const asyncOperation = getAsyncOperation(
     state,
     descriptorId,
     asyncOperationParams,
-  });
+  );
 
   if (asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ && asyncOperation.fetchStatus !== FETCH_STATUS.NULL) {
     return (Date.now() - asyncOperation.lastFetchStatusTime) >= asyncOperationDescriptor.minCacheTime;
@@ -155,12 +155,12 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
   // in case operation/descriptor state is initialized in userland we pass that through
   // to the library state.
 
-  const asyncOperationToTranform = getAsyncOperation({
-    state: newState,
+  const asyncOperationToTranform = getAsyncOperation(
+    newState,
     descriptorId,
-    params: asyncOperationParams,
+    asyncOperationParams,
     otherFields,
-  });
+  );
 
   const newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
 
