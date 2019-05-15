@@ -69,6 +69,20 @@ const getLatestOperationByDescriptorId = (state, descriptorId) => {
   }, {});
 };
 
+const setInvalidatedOperationByKeyState = (state, asyncOperationKey, descriptorId) => {
+  const asyncOperationDescriptor = state.descriptors[descriptorId];
+
+  return {
+    ...state,
+    operations: {
+      ...state.operations,
+      [asyncOperationKey]: asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+        ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
+        : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+    },
+  };
+};
+
 // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
@@ -212,4 +226,6 @@ export default {
 
   getAsyncOperationFromState,
   getLatestOperationByDescriptorId,
+
+  setInvalidatedOperationByKeyState,
 };

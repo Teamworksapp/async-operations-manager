@@ -3,8 +3,10 @@ import { expect } from 'chai';
 
 import {
   getAsyncOperationsManagerState,
+  setAsyncOperationsManagerState,
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
+  invalidateAsyncOperationByKey,
 } from '../asyncOperationManagerUtils';
 
 import { ASYNC_OPERATION_STEPS } from '../constants';
@@ -239,6 +241,40 @@ describe('asyncOperationManagerUtils', () => {
         const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
         expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED' });
         expect(newOperationsState).to.matchSnapshot('updated state showing failed write async operation');
+      });
+    });
+  });
+
+  describe('invalidateAsyncOperationByKey', () => {
+    it('should invalidate an asyncOperation by key', () => {
+      state = {
+        operations: {
+          FETCH_CALENDAR_DATA_33: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
+            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
+            orgId: 33,
+          },
+        },
+      };
+
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          requiredParams: ['orgId'],
+          operationType: 'READ',
+        },
+      );
+
+      setAsyncOperationsManagerState(state);
+
+      const newState = invalidateAsyncOperationByKey('FETCH_CALENDAR_DATA_22', 'FETCH_CALENDAR_DATA');
+      expect(newState.operations.FETCH_CALENDAR_DATA_22).to.deep.include({
+        lastFetchStatusTime: 0,
+        lastDataStatusTime: 0,
       });
     });
   });

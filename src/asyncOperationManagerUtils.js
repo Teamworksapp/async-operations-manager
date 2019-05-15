@@ -61,6 +61,12 @@ const registerAsyncOperationDescriptors = (asyncOperationDescriptors, ...otherDe
   return asyncOperationManagerState.setState(newState);
 };
 
+const invalidateAsyncOperationByKey = (asyncOperationKey, descriptorId) => {
+  const state = getAsyncOperationsManagerState();
+  const newState = asyncOperationStateUtils.setInvalidatedOperationByKeyState(state, asyncOperationKey, descriptorId);
+  return asyncOperationManagerState.setState(newState);
+};
+
 const getAsyncOperation = ({
   state,
   descriptorId,
@@ -168,6 +174,7 @@ export {
   setAsyncOperationsManagerState,
 
   getAsyncOperation,
+  invalidateAsyncOperationByKey,
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
 
