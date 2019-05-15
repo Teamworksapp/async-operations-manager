@@ -17,7 +17,7 @@ var initialState = {
   descriptors: {},
   operations: {}
 };
-describe.only('asyncOperationStateUtils', function () {
+describe('asyncOperationStateUtils', function () {
   describe('updateAsyncOperationDescriptor', function () {
     var stub;
     var state;
@@ -166,7 +166,7 @@ describe.only('asyncOperationStateUtils', function () {
 
       _asyncOperationManagerState.asyncOperationManagerState.clearState();
     });
-    it.only('should return an initial read asyncOperation', function () {
+    it('should return an initial read asyncOperation', function () {
       var asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['personId'],
@@ -458,7 +458,7 @@ describe.only('asyncOperationStateUtils', function () {
       });
       (0, _chai.expect)(asyncOperation).to.matchSnapshot('well formed initial read async operation');
     });
-    it('should invalidate async operation if an invalidatingAsyncOperation is a write async operation and has a fetchStatus timestamp after async operation fetchStatus timestamp', function () {
+    it('should invalidate read async operation if an invalidatingAsyncOperation is a write async operation and has a fetchStatus timestamp after read async operation fetchStatus timestamp', function () {
       state = {
         operations: {
           FETCH_CALENDAR_DATA_33: {
@@ -488,7 +488,7 @@ describe.only('asyncOperationStateUtils', function () {
             descriptorId: 'FETCH_CALENDAR_DATA',
             requiredParams: ['orgId'],
             operationType: 'READ',
-            invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA']
+            invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
           }
         }
       };
@@ -502,7 +502,7 @@ describe.only('asyncOperationStateUtils', function () {
       var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
         state: state,
         asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
-        asyncOperationKey: 'FETCH_APPOINTMENT_DATA_111',
+        asyncOperationKey: 'FETCH_CALENDAR_DATA_33',
         asyncOperationDescriptor: asyncOperationDescriptor,
         asyncOperationParams: {
           orgId: 33
@@ -515,6 +515,64 @@ describe.only('asyncOperationStateUtils', function () {
         lastDataStatusTime: 0
       });
       (0, _chai.expect)(asyncOperation).to.matchSnapshot('well formed initial read asyncOperation');
+    });
+    it('should NOT invalidate read async operation if the async operation step is not resolve', function () {
+      state = {
+        operations: {
+          FETCH_CALENDAR_DATA_33: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
+            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
+            orgId: 33
+          },
+          UPDATE_APPOINTMENT_DATA_222: {
+            descriptorId: 'UPDATE_APPOINTMENT_DATA',
+            fetchStatus: 'PENDING',
+            message: null,
+            lastFetchStatusTime: '2018-09-21T19:13:52.189Z',
+            appointmentId: 222
+          }
+        },
+        descriptors: {
+          UPDATE_APPOINTMENT_DATA: {
+            descriptorId: 'UPDATE_APPOINTMENT_DATA',
+            requiredParams: ['appointmentId'],
+            operationType: 'WRITE'
+          },
+          FETCH_CALENDAR_DATA: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            requiredParams: ['orgId'],
+            operationType: 'READ',
+            invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
+          }
+        }
+      };
+      var asyncOperationDescriptor = {
+        descriptorId: 'FETCH_CALENDAR_DATA',
+        requiredParams: ['orgId'],
+        operationType: 'READ',
+        invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA']
+      };
+
+      var asyncOperation = _asyncOperationStateUtils.default.getAsyncOperation({
+        state: state,
+        asyncOperationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_CALENDAR_DATA_33',
+        asyncOperationDescriptor: asyncOperationDescriptor,
+        asyncOperationParams: {
+          orgId: 33
+        }
+      });
+
+      (0, _chai.expect)(asyncOperation).to.be.an('object');
+      (0, _chai.expect)(asyncOperation).to.deep.include({
+        lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
+        lastDataStatusTime: '2018-09-01T19:12:53.189Z'
+      });
+      (0, _chai.expect)(asyncOperation).to.matchSnapshot('not invalidated read asyncOperation');
     });
   });
 });

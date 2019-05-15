@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getAsyncOperationInfo = exports.getAndValidateParams = exports.generateAsyncOperationKey = exports.makeConstantsObject = void 0;
+exports.getAsyncOperationDescriptor = exports.getAsyncOperationInfo = exports.getAndValidateParams = exports.generateAsyncOperationKey = exports.makeConstantsObject = void 0;
 
 var _lodash = require("lodash");
 
@@ -87,6 +87,8 @@ var getAsyncOperationDescriptor = function getAsyncOperationDescriptor(asyncOper
 
   return asyncOperationDescriptor;
 };
+
+exports.getAsyncOperationDescriptor = getAsyncOperationDescriptor;
 
 var getAsyncOperationInfo = function getAsyncOperationInfo(descriptors, descriptorId, params) {
   var asyncOperationDescriptor = getAsyncOperationDescriptor(descriptors, descriptorId);

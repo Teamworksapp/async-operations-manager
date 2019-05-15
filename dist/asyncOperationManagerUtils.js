@@ -62,7 +62,6 @@ exports.registerAsyncOperationDescriptors = registerAsyncOperationDescriptors;
 
 var getAsyncOperation = function getAsyncOperation(_ref) {
   var state = _ref.state,
-      asyncOperationStep = _ref.asyncOperationStep,
       descriptorId = _ref.descriptorId,
       params = _ref.params,
       otherFields = _ref.otherFields;
@@ -78,7 +77,6 @@ var getAsyncOperation = function getAsyncOperation(_ref) {
 
   return _asyncOperationStateUtils.default.getAsyncOperation({
     state: newState,
-    asyncOperationStep: asyncOperationStep,
     asyncOperationKey: asyncOperationKey,
     asyncOperationDescriptor: asyncOperationDescriptor,
     asyncOperationParams: asyncOperationParams,
@@ -143,10 +141,8 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
   // to the library state.
 
 
-  debugger;
   var asyncOperationToTranform = getAsyncOperation({
     state: newState,
-    asyncOperationStep: asyncOperationStep,
     descriptorId: descriptorId,
     params: asyncOperationParams,
     otherFields: otherFields
