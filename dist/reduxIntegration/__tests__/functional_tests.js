@@ -69,7 +69,7 @@ describe('scenario tests', function () {
         }
       });
     });
-    it.only('should update a failed READ operation as expected from start to finish', function () {
+    it('should update a failed READ operation as expected from start to finish', function () {
       var rejectAction = (0, _asyncOperationReduxUtils.createAsyncOperationRejectAction)('FETCH_PERSON_DATA', {
         personId: 111
       });
