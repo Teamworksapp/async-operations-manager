@@ -70,12 +70,7 @@ var invalidateAsyncOperationByKey = function invalidateAsyncOperationByKey(async
 
 exports.invalidateAsyncOperationByKey = invalidateAsyncOperationByKey;
 
-var getAsyncOperation = function getAsyncOperation(_ref) {
-  var state = _ref.state,
-      descriptorId = _ref.descriptorId,
-      params = _ref.params,
-      otherFields = _ref.otherFields;
-
+var getAsyncOperation = function getAsyncOperation(state, descriptorId, params, otherFields) {
   var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
       asyncOperationDescriptor = _getAsyncOperationInf.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf.asyncOperationParams,
@@ -103,11 +98,7 @@ var shouldRunOperation = function shouldRunOperation(descriptorId, params) {
       asyncOperationDescriptor = _getAsyncOperationInf2.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf2.asyncOperationParams;
 
-  var asyncOperation = getAsyncOperation({
-    state: state,
-    descriptorId: descriptorId,
-    asyncOperationParams: asyncOperationParams
-  });
+  var asyncOperation = getAsyncOperation(state, descriptorId, asyncOperationParams);
 
   if (asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ && asyncOperation.fetchStatus !== _constants.FETCH_STATUS.NULL) {
     return Date.now() - asyncOperation.lastFetchStatusTime >= asyncOperationDescriptor.minCacheTime;
@@ -151,12 +142,7 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
   // to the library state.
 
 
-  var asyncOperationToTranform = getAsyncOperation({
-    state: newState,
-    descriptorId: descriptorId,
-    params: asyncOperationParams,
-    otherFields: otherFields
-  });
+  var asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
   var newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
   newState = _asyncOperationStateUtils.default.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
   return _asyncOperationManagerState.asyncOperationManagerState.setState(newState);
