@@ -76,7 +76,7 @@ describe('scenario tests', () => {
       });
     });
 
-    it.only('should update a failed READ operation as expected from start to finish', () => {
+    it('should update a failed READ operation as expected from start to finish', () => {
       const rejectAction = createAsyncOperationRejectAction('FETCH_PERSON_DATA', {
         personId: 111,
       });
