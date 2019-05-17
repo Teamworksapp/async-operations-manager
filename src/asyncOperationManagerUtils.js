@@ -157,13 +157,19 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
   // descriptor asyncOperationStep callbacks
   switch (asyncOperationStep) {
     case ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION:
-      asyncOperationDescriptor.onBegin(asyncOperationParams);
+      if (asyncOperationDescriptor.onBegin) {
+        asyncOperationDescriptor.onBegin(asyncOperationParams);
+      }
       break;
     case ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION:
-      asyncOperationDescriptor.onResolve(asyncOperationParams);
+      if (asyncOperationDescriptor.onResolve) {
+        asyncOperationDescriptor.onResolve(asyncOperationParams);
+      }
       break;
     case ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION:
-      asyncOperationDescriptor.onReject(asyncOperationParams);
+      if (asyncOperationDescriptor.onReject) {
+        asyncOperationDescriptor.onReject(asyncOperationParams);
+      }
       break;
     default:
       break;

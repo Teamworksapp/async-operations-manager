@@ -143,16 +143,30 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
       otherFields = _getAsyncOperationInf3.otherFields; // descriptor asyncOperationStep callbacks
 
 
-  if (asyncOperationDescriptor.onBegin && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onBegin(asyncOperationParams);
-  }
+  switch (asyncOperationStep) {
+    case _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onBegin) {
+        asyncOperationDescriptor.onBegin(asyncOperationParams);
+      }
 
-  if (asyncOperationDescriptor.onResolve && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onResolve(asyncOperationParams);
-  }
+      break;
 
-  if (asyncOperationDescriptor.onReject && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onReject(asyncOperationParams);
+    case _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onResolve) {
+        asyncOperationDescriptor.onResolve(asyncOperationParams);
+      }
+
+      break;
+
+    case _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onReject) {
+        asyncOperationDescriptor.onReject(asyncOperationParams);
+      }
+
+      break;
+
+    default:
+      break;
   } // If any of the asyncOperationStep callbacks changed the state we want to grab the latest state
 
 
