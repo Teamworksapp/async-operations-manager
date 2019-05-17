@@ -23,46 +23,6 @@ Object {
 }
 `;
 
-exports[`asyncOperationStateUtils getAsyncOperationFromState should NOT invalidate read async operation if the async operation step is not resolve: not invalidated read asyncOperation 1`] = `
-Object {
-  "dataStatus": "PRESENT",
-  "descriptorId": "FETCH_CALENDAR_DATA",
-  "fetchStatus": "SUCCESSFUL",
-  "lastDataStatusTime": "2018-09-01T19:12:53.189Z",
-  "lastFetchStatusTime": "2018-09-01T19:12:46.189Z",
-  "message": null,
-  "orgId": 33,
-}
-`;
-
-exports[`asyncOperationStateUtils getAsyncOperationFromState should invalidate an async operation if an invalidatingAsyncOperation shares the same descriptorId: well formed initial read async operation 1`] = `
-Object {
-  "appointmentId": 111,
-  "dataStatus": "ABSENT",
-  "descriptorId": "FETCH_APPOINTMENT_DATA",
-  "fetchStatus": "NULL",
-  "lastDataStatusTime": 0,
-  "lastFetchFailed": false,
-  "lastFetchStatusTime": 0,
-  "message": null,
-  "operationKey": "FETCH_APPOINTMENT_DATA_111",
-}
-`;
-
-exports[`asyncOperationStateUtils getAsyncOperationFromState should invalidate read async operation if an invalidatingAsyncOperation is a write async operation and has a fetchStatus timestamp after read async operation fetchStatus timestamp: well formed initial read asyncOperation 1`] = `
-Object {
-  "dataStatus": "ABSENT",
-  "descriptorId": "FETCH_CALENDAR_DATA",
-  "fetchStatus": "NULL",
-  "lastDataStatusTime": 0,
-  "lastFetchFailed": false,
-  "lastFetchStatusTime": 0,
-  "message": null,
-  "operationKey": "FETCH_CALENDAR_DATA_33",
-  "orgId": 33,
-}
-`;
-
 exports[`asyncOperationStateUtils getAsyncOperationFromState should return a pending asyncOperation: well formed pending asyncOperation 1`] = `
 Object {
   "dataStatus": "ABSENT",

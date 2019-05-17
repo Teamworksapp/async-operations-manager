@@ -6,7 +6,7 @@ import {
   setAsyncOperationsManagerState,
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
-  invalidateAsyncOperationByKey,
+  invalidateAsyncOperation,
 } from '../asyncOperationManagerUtils';
 
 import { ASYNC_OPERATION_STEPS } from '../constants';
@@ -245,7 +245,7 @@ describe('asyncOperationManagerUtils', () => {
     });
   });
 
-  describe('invalidateAsyncOperationByKey', () => {
+  describe('invalidateAsyncOperation', () => {
     it('should invalidate an asyncOperation by key', () => {
       state = {
         operations: {
@@ -271,8 +271,8 @@ describe('asyncOperationManagerUtils', () => {
 
       setAsyncOperationsManagerState(state);
 
-      const newState = invalidateAsyncOperationByKey('FETCH_CALENDAR_DATA_22', 'FETCH_CALENDAR_DATA');
-      expect(newState.operations.FETCH_CALENDAR_DATA_22).to.deep.include({
+      const newState = invalidateAsyncOperation('FETCH_CALENDAR_DATA', { orgId: 33 });
+      expect(newState.operations.FETCH_CALENDAR_DATA_33).to.deep.include({
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
       });
