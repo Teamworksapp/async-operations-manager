@@ -5,15 +5,14 @@
   "scripts": {
     "test": "npx jest",
     "ci-tests": "npx jest -u",
-    "build": "babel src --out-dir ./dist --source-maps",
+    "build": "npx babel src --out-dir ./dist --ignore 'src/**/_tests__' --source-maps ",
     "coverage": "nyc mocha --require @babel/register src/",
     "sendCoverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run test",
-      "pre-push": "npm run build"
+      "pre-commit": "npm run test && npm run build"
     }
   },
   "author": "Darien Lombardi https://github.com/dlombardi",

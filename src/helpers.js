@@ -102,4 +102,5 @@ export {
   generateAsyncOperationKey,
   getAndValidateParams,
   getAsyncOperationInfo,
+  getAsyncOperationDescriptor,
 };

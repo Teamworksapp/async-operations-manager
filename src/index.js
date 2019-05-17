@@ -5,8 +5,8 @@ import {
 
   getAsyncOperation,
   registerAsyncOperationDescriptors,
-  getAsyncOperationDescriptor,
   getStateForOperationAfterStep,
+  invalidateAsyncOperation,
   
   shouldRunOperation,
 } from './asyncOperationManagerUtils';
@@ -41,7 +41,7 @@ export default {
 
   // Operation & Decriptor API //
   getAsyncOperation,
-  getAsyncOperationDescriptor,
+  invalidateAsyncOperation,
   getStateForOperationAfterStep,
   registerAsyncOperationDescriptors,
   shouldRunOperation,

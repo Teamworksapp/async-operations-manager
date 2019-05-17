@@ -61,7 +61,18 @@ const registerAsyncOperationDescriptors = (asyncOperationDescriptors, ...otherDe
   return asyncOperationManagerState.setState(newState);
 };
 
-const getAsyncOperation = (state, descriptorId, params, otherFields) => {
+const invalidateAsyncOperation = (descriptorId, params) => {
+  const state = getAsyncOperationsManagerState();
+  const newState = asyncOperationStateUtils.createInvalidatedOperationState(state, descriptorId, params);
+  return asyncOperationManagerState.setState(newState);
+};
+
+const getAsyncOperation = (
+  state,
+  descriptorId,
+  params,
+  otherFields,
+) => {
   const {
     asyncOperationDescriptor,
     asyncOperationParams,
@@ -72,7 +83,13 @@ const getAsyncOperation = (state, descriptorId, params, otherFields) => {
   // to the library state.
   const newState = asyncOperationManagerState.setState(state);
 
-  return asyncOperationStateUtils.getAsyncOperation(newState, asyncOperationKey, asyncOperationDescriptor, asyncOperationParams, otherFields);
+  return asyncOperationStateUtils.getAsyncOperationFromState({
+    state: newState,
+    asyncOperationKey,
+    asyncOperationDescriptor,
+    asyncOperationParams,
+    fieldsToAdd: otherFields,
+  });
 };
 
 const shouldRunOperation = (descriptorId, params) => {
@@ -83,7 +100,11 @@ const shouldRunOperation = (descriptorId, params) => {
     asyncOperationParams,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-  const asyncOperation = getAsyncOperation(state, descriptorId, asyncOperationParams);
+  const asyncOperation = getAsyncOperation(
+    state,
+    descriptorId,
+    asyncOperationParams,
+  );
 
   if (asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ && asyncOperation.fetchStatus !== FETCH_STATUS.NULL) {
     return (Date.now() - asyncOperation.lastFetchStatusTime) >= asyncOperationDescriptor.minCacheTime;
@@ -122,7 +143,9 @@ const transformTypeLookup = {
 
 // this function is called in the reducer (in redux integration)
 const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, params) => {
-  let newState = asyncOperationManagerState.setState(state);
+  // in case operation/descriptor state is initialized in userland we pass that through
+  // to the library state.
+  let newState = setAsyncOperationsManagerState(state);
 
   const {
     asyncOperationDescriptor,
@@ -131,14 +154,42 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
     otherFields,
   } = getAsyncOperationInfo(newState.descriptors, descriptorId, params);
 
-  // in case operation/descriptor state is initialized in userland we pass that through
-  // to the library state.
+  // descriptor asyncOperationStep callbacks
+  switch (asyncOperationStep) {
+    case ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onBegin) {
+        asyncOperationDescriptor.onBegin(asyncOperationParams);
+      }
+      break;
+    case ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onResolve) {
+        asyncOperationDescriptor.onResolve(asyncOperationParams);
+      }
+      break;
+    case ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION:
+      if (asyncOperationDescriptor.onReject) {
+        asyncOperationDescriptor.onReject(asyncOperationParams);
+      }
+      break;
+    default:
+      break;
+  }
 
-  const asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
+  // If any of the asyncOperationStep callbacks changed the state we want to grab the latest state
+  newState = getAsyncOperationsManagerState();
+
+  const asyncOperationToTranform = getAsyncOperation(
+    newState,
+    descriptorId,
+    asyncOperationParams,
+    otherFields,
+  );
+
   const newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
 
   newState = asyncOperationStateUtils.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
-  return asyncOperationManagerState.setState(newState).operations;
+
+  return asyncOperationManagerState.setState(newState);
 };
 
 export {
@@ -147,6 +198,7 @@ export {
   setAsyncOperationsManagerState,
 
   getAsyncOperation,
+  invalidateAsyncOperation,
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
 

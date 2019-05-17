@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`functional tests Invalidate operations should invalidate async operation if another operation descriptor's onResolve invalidates it: Invalidated read fetchCalendarDataAsyncOperation 1`] = `
+Object {
+  "dataStatus": "ABSENT",
+  "descriptorId": "FETCH_CALENDAR_DATA",
+  "fetchStatus": "NULL",
+  "lastDataStatusTime": 0,
+  "lastFetchFailed": false,
+  "lastFetchStatusTime": 0,
+  "message": null,
+  "operationKey": "FETCH_CALENDAR_DATA_22",
+}
+`;

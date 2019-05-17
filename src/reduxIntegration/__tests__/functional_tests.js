@@ -14,10 +14,12 @@ import {
 
 import {
   clearAsyncOperationsManagerState,
+  getAsyncOperationsManagerState,
   registerAsyncOperationDescriptors,
+  invalidateAsyncOperation,
 } from '../../asyncOperationManagerUtils';
 
-describe('scenario tests', () => {
+describe('functional tests', () => {
   let state;
 
   beforeEach(() => {
@@ -37,7 +39,6 @@ describe('scenario tests', () => {
         requiredParams: ['personId'],
         operationType: 'READ',
       });
-  
       initialAction = createAsyncOperationInitialAction('FETCH_PERSON_DATA', {
         personId: 111,
       });
@@ -52,7 +53,7 @@ describe('scenario tests', () => {
       });
 
       expect(asyncOperationReducer(state, initialAction)).to.deep.equal(state);
-      expect(asyncOperationReducer(state, beginAction)).to.deep.equal({
+      expect(asyncOperationReducer(state, beginAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.PENDING,
@@ -63,7 +64,7 @@ describe('scenario tests', () => {
           personId: 111,
         },
       });
-      expect(asyncOperationReducer(state, resolveAction)).to.deep.equal({
+      expect(asyncOperationReducer(state, resolveAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.SUCCESSFUL,
@@ -83,7 +84,7 @@ describe('scenario tests', () => {
       });
 
       expect(asyncOperationReducer(state, initialAction)).to.deep.equal(state);
-      expect(asyncOperationReducer(state, beginAction)).to.deep.equal({
+      expect(asyncOperationReducer(state, beginAction).operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.PENDING,
@@ -94,7 +95,7 @@ describe('scenario tests', () => {
           personId: 111,
         },
       });
-      expect(asyncOperationReducer(state, rejectAction)).to.deep.equal({
+      expect(asyncOperationReducer(state, rejectAction).operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.FAILED,
@@ -106,6 +107,118 @@ describe('scenario tests', () => {
           lastFetchFailed: true,
         },
       });
+    });
+  });
+
+  describe('Invalidate operations', () => {
+    beforeEach(() => {
+      state = {};
+      clearAsyncOperationsManagerState();
+    });
+
+    it('should invalidate async operation if another operation descriptor\'s onResolve invalidates it', () => {
+      registerAsyncOperationDescriptors([
+        {
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          requiredParams: ['orgId', 'appointmentId'],
+          operationType: 'WRITE',
+          onResolve: ({ orgId }) => {
+            invalidateAsyncOperation('FETCH_CALENDAR_DATA', { orgId });
+          },
+        },
+        {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          requiredParams: ['orgId'],
+          operationType: 'READ',
+        },
+      ]);
+
+      const initialFetchCalendarDataAction = createAsyncOperationInitialAction('FETCH_CALENDAR_DATA', {
+        orgId: 22,
+      });
+      const beginFetchCalendarDataAction = createAsyncOperationBeginAction('FETCH_CALENDAR_DATA', {
+        orgId: 22,
+      });
+      const resolveFetchCalendarDataAction = createAsyncOperationResolveAction('FETCH_CALENDAR_DATA', {
+        orgId: 22,
+      });
+
+      expect(asyncOperationReducer(state, initialFetchCalendarDataAction)).to.deep.equal(state);
+      expect(asyncOperationReducer(state, beginFetchCalendarDataAction).operations).to.deep.include({
+        FETCH_CALENDAR_DATA_22: {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          fetchStatus: FETCH_STATUS.PENDING,
+          dataStatus: DATA_STATUS.ABSENT,
+          message: null,
+          lastFetchStatusTime: 1530518207007,
+          lastDataStatusTime: 0,
+          orgId: 22,
+        },
+      });
+
+      expect(asyncOperationReducer(state, resolveFetchCalendarDataAction).operations).to.deep.include({
+        FETCH_CALENDAR_DATA_22: {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          fetchStatus: 'SUCCESSFUL',
+          dataStatus: 'PRESENT',
+          message: null,
+          lastFetchStatusTime: 1530518207007,
+          lastDataStatusTime: 1530518207007,
+          orgId: 22,
+          lastFetchFailed: false,
+        },
+      });
+
+      const dateNowStub = jest.fn(() => 1540000000000);
+      global.Date.now = dateNowStub;
+
+      const initialUpdateAppointmentDataAction = createAsyncOperationInitialAction('UPDATE_APPOINTMENT_DATA', {
+        orgId: 22,
+        appointmentId: 111,
+      });
+      const beginUpdateAppointmentDataAction = createAsyncOperationBeginAction('UPDATE_APPOINTMENT_DATA', {
+        orgId: 22,
+        appointmentId: 111,
+      });
+      const resolveUpdateAppointmentDataAction = createAsyncOperationResolveAction('UPDATE_APPOINTMENT_DATA', {
+        orgId: 22,
+        appointmentId: 111,
+      });
+
+      expect(asyncOperationReducer(state, initialUpdateAppointmentDataAction)).to.deep.equal(state);
+      expect(asyncOperationReducer(state, beginUpdateAppointmentDataAction).operations).to.deep.include({
+        UPDATE_APPOINTMENT_DATA_22_111: {
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          fetchStatus: FETCH_STATUS.PENDING,
+          message: null,
+          lastFetchStatusTime: 1540000000000,
+          orgId: 22,
+          appointmentId: 111,
+        },
+      });
+
+      expect(asyncOperationReducer(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
+        UPDATE_APPOINTMENT_DATA_22_111: {
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          fetchStatus: 'SUCCESSFUL',
+          message: null,
+          lastFetchStatusTime: 1540000000000,
+          orgId: 22,
+          appointmentId: 111,
+        },
+      });
+
+      const currentState = getAsyncOperationsManagerState();
+
+
+      const fetchCalendarDataAsyncOperation = currentState.operations.FETCH_CALENDAR_DATA_22;
+
+      expect(fetchCalendarDataAsyncOperation).to.be.an('object');
+      expect(fetchCalendarDataAsyncOperation).to.deep.include({
+        lastFetchStatusTime: 0,
+        lastDataStatusTime: 0,
+      });
+      expect(fetchCalendarDataAsyncOperation).to.matchSnapshot('Invalidated read fetchCalendarDataAsyncOperation');
     });
   });
 

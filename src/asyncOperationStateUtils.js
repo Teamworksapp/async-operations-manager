@@ -1,6 +1,9 @@
 
 // TODO: JSDocify every function
-import { pick, forEach, reduce } from 'lodash';
+import {
+  pick,
+  reduce,
+} from 'lodash';
 import PropTypes from 'prop-types';
 
 import asyncOperationManagerConfig from './config';
@@ -52,10 +55,34 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
   };
 };
 
+const createInvalidatedOperationState = (state, descriptorId, params) => {
+  const {
+    asyncOperationDescriptor,
+    asyncOperationKey,
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
+
+
+  return {
+    ...state,
+    operations: {
+      ...state.operations,
+      [asyncOperationKey]: asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+        ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
+        : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+    },
+  };
+};
+
 // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
-const getAsyncOperation = (state, asyncOperationKey, asyncOperationDescriptor, asyncOperationParams, fieldsToAdd) => {
+const getAsyncOperationFromState = ({
+  state,
+  asyncOperationKey,
+  asyncOperationDescriptor,
+  asyncOperationParams,
+  fieldsToAdd,
+}) => {
   const { operations, descriptors } = state;
 
   let parentAsyncOperation;
@@ -88,7 +115,13 @@ const getAsyncOperation = (state, asyncOperationKey, asyncOperationDescriptor, a
     } = getAsyncOperationInfo(descriptors, asyncOperationDescriptor.parentOperationDescriptorId, asyncOperationParams);
 
     if (parentAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ) {
-      parentAsyncOperation = getAsyncOperation(state, parentAsyncOperationKey, parentAsyncOperationDescriptor, asyncOperationParams, fieldsToAddToAction);
+      parentAsyncOperation = getAsyncOperationFromState({
+        state,
+        asyncOperationKey: parentAsyncOperationKey,
+        asyncOperationDescriptor: parentAsyncOperationDescriptor,
+        asyncOperationParams,
+        fieldsToAdd: fieldsToAddToAction,
+      });
     }
   }
 
@@ -97,41 +130,8 @@ const getAsyncOperation = (state, asyncOperationKey, asyncOperationDescriptor, a
       config.logger.verboseLoggingCallback(`asyncOperation not found with given key: ${asyncOperationKey}. Defaulting to an initial asyncOperation`);
     }
     return asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, fieldsToAddToAction, parentAsyncOperation)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, fieldsToAddToAction, parentAsyncOperation);
-  }
-
-  if (asyncOperationDescriptor.invalidatingOperationsDescriptorIds) {
-    // we want to detect whether to invalidate the async operation if an async operation has been found
-    let invalidateOperation = false;
-
-    forEach(asyncOperationDescriptor.invalidatingOperationsDescriptorIds, (descriptorId) => {
-      // hanlde if an asyncOperation invalidates itself
-      if (descriptorId === asyncOperationDescriptor.descriptorId) {
-        invalidateOperation = true;
-        return false;
-      }
-
-      const {
-        asyncOperationDescriptor: invalidatingAsyncOperationDescriptor,
-        asyncOperationKey: invalidatingAsyncOperationKey,
-      } = getAsyncOperationInfo(descriptors, descriptorId, asyncOperationParams);
-      const invalidatingOperation = getAsyncOperation(state, invalidatingAsyncOperationKey, invalidatingAsyncOperationDescriptor, asyncOperationParams, fieldsToAddToAction);
-
-      // Handle invalidating operations with write or read operations.
-      invalidateOperation = invalidatingAsyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ ?
-        invalidatingOperation.lastDataStatusTime.valueOf() >= asyncOperation.lastDataStatusTime.valueOf() :
-        invalidatingOperation.lastFetchStatusTime.valueOf() >= asyncOperation.lastFetchStatusTime.valueOf();
-
-      if (invalidateOperation) {
-        return false;
-      }
-      return true;
-    });
-
-    if (invalidateOperation) {
-      return initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, fieldsToAddToAction);
-    }
+      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
+      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   }
 
   // We want to determine whether or not to use that parentAsyncOperation metaData based on the
@@ -182,5 +182,7 @@ export default {
   updateAsyncOperation,
   bulkUpdateAsyncOperations,
 
-  getAsyncOperation,
+  getAsyncOperationFromState,
+
+  createInvalidatedOperationState,
 };

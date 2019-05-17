@@ -4,6 +4,7 @@ import sinon from 'sinon';
 
 import asyncOperationStateUtils from '../asyncOperationStateUtils';
 import { asyncOperationManagerState } from '../asyncOperationManagerState';
+import { ASYNC_OPERATION_STEPS } from '../constants';
 
 const initialState = {
   descriptors: {},
@@ -154,7 +155,7 @@ describe('asyncOperationStateUtils', () => {
     });
   });
 
-  describe('getAsyncOperation', () => {
+  describe('getAsyncOperationFromState', () => {
     let state;
     beforeEach(() => {
       state = initialState;
@@ -168,13 +169,19 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, { personId: 111 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111 },
+      });
 
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
+        operationKey: 'FETCH_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -186,10 +193,17 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'WRITE',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'UPDATE_PERSON_DATA_111', asyncOperationDescriptor, { personId: 111 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationKey: 'UPDATE_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111 },
+      });
+
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         lastFetchStatusTime: 0,
+        operationKey: 'UPDATE_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -215,7 +229,14 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, { personId: 111 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationStep: ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111 },
+      });
+
       expect(asyncOperation).to.be.an('object');
       expect(asyncOperation).to.matchSnapshot('well formed pending asyncOperation');
     });
@@ -241,7 +262,14 @@ describe('asyncOperationStateUtils', () => {
         operationType: 'READ',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', asyncOperationDescriptor, { personId: 111 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111 },
+      });
+
       expect(asyncOperation).to.be.an('object');
       expect(asyncOperation).to.matchSnapshot('well formed successful asyncOperation');
     });
@@ -275,7 +303,7 @@ describe('asyncOperationStateUtils', () => {
         },
       };
 
-      const fetchPersonDataAsyncOperationDescriptor = {
+      const asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['personId'],
         operationType: 'READ',
@@ -283,7 +311,13 @@ describe('asyncOperationStateUtils', () => {
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', fetchPersonDataAsyncOperationDescriptor, { personId: 111 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111 },
+      });
 
       expect(asyncOperation).to.be.an('object');
       expect(asyncOperation).to.deep.include({
@@ -340,119 +374,27 @@ describe('asyncOperationStateUtils', () => {
       };
 
 
-      const fetchPersonDataAsyncOperationDescriptor = {
+      const asyncOperationDescriptor = {
         descriptorId: 'FETCH_PERSON_DATA',
         requiredParams: ['orgId', 'personId'],
         operationType: 'READ',
         parentOperationDescriptorId: 'FETCH_ALL_PERSON_DATA_FOR_ORG',
       };
 
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_PERSON_DATA_111', fetchPersonDataAsyncOperationDescriptor, { personId: 111, orgId: 22 });
+      const asyncOperation = asyncOperationStateUtils.getAsyncOperationFromState({
+        state,
+        asyncOperationStep: ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
+        asyncOperationKey: 'FETCH_PERSON_DATA_111',
+        asyncOperationDescriptor,
+        asyncOperationParams: { personId: 111, orgId: 22 },
+      });
+
       expect(asyncOperation).to.be.an('object');
       expect(asyncOperation).to.deep.include({
         lastFetchStatusTime: '2018-10-01T19:16:52.189Z',
         lastDataStatusTime: '2018-10-01T19:23:56.189Z',
       });
       expect(asyncOperation).to.matchSnapshot('well formed successful asyncOperation with parentAsyncOperation metaData two levels deep');
-    });
-
-    it('should invalidate an async operation if an invalidatingAsyncOperation shares the same descriptorId', () => {
-      state = {
-        operations: {
-          FETCH_APPOINTMENT_DATA_111: {
-            descriptorId: 'FETCH_APPOINTMENT_DATA',
-            fetchStatus: 'SUCCESSFUL',
-            dataStatus: 'PRESENT',
-            message: null,
-            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
-            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            appointmentId: 111,
-          },
-          FETCH_APPOINTMENT_DATA_222: {
-            descriptorId: 'FETCH_APPOINTMENT_DATA',
-            fetchStatus: 'SUCCESSFUL',
-            dataStatus: 'PRESENT',
-            message: null,
-            lastFetchStatusTime: '2018-09-21T19:13:52.189Z',
-            lastDataStatusTime: '2018-09-21T19:13:56.189Z',
-            appointmentId: 222,
-          },
-        },
-        descriptors: {
-          FETCH_APPOINTMENT_DATA: {
-            descriptorId: 'FETCH_APPOINTMENT_DATA',
-            requiredParams: ['appointmentId'],
-            operationType: 'READ',
-            invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA'],
-          },
-        },
-      };
-
-      const fetchAppointmentDataAsyncOperationDescriptor = {
-        descriptorId: 'FETCH_APPOINTMENT_DATA',
-        requiredParams: ['appointmentId'],
-        operationType: 'READ',
-        invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA'],
-      };
-
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_APPOINTMENT_DATA_111', fetchAppointmentDataAsyncOperationDescriptor, { appointmentId: 111 });
-      expect(asyncOperation).to.be.an('object');
-      expect(asyncOperation).to.deep.include({
-        lastFetchStatusTime: 0,
-        lastDataStatusTime: 0,
-      });
-      expect(asyncOperation).to.matchSnapshot('well formed initial read async operation');
-    });
-
-    it('should invalidate async operation if an invalidatingAsyncOperation is a write async operation and has a fetchStatus timestamp after async operation fetchStatus timestamp', () => {
-      state = {
-        operations: {
-          FETCH_CALENDAR_DATA_33: {
-            descriptorId: 'FETCH_CALENDAR_DATA',
-            fetchStatus: 'SUCCESSFUL',
-            dataStatus: 'PRESENT',
-            message: null,
-            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
-            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            orgId: 33,
-          },
-          UPDATE_APPOINTMENT_DATA_222: {
-            descriptorId: 'UPDATE_APPOINTMENT_DATA',
-            fetchStatus: 'SUCCESSFUL',
-            message: null,
-            lastFetchStatusTime: '2018-09-21T19:13:52.189Z',
-            appointmentId: 222,
-          },
-        },
-        descriptors: {
-          UPDATE_APPOINTMENT_DATA: {
-            descriptorId: 'UPDATE_APPOINTMENT_DATA',
-            requiredParams: ['appointmentId'],
-            operationType: 'WRITE',
-          },
-          FETCH_CALENDAR_DATA: {
-            descriptorId: 'FETCH_CALENDAR_DATA',
-            requiredParams: ['orgId'],
-            operationType: 'READ',
-            invalidatingOperationsDescriptorIds: ['FETCH_APPOINTMENT_DATA'],
-          },
-        },
-      };
-
-      const fetchAppointmentDataAsyncOperationDescriptor = {
-        descriptorId: 'FETCH_CALENDAR_DATA',
-        requiredParams: ['orgId'],
-        operationType: 'READ',
-        invalidatingOperationsDescriptorIds: ['UPDATE_APPOINTMENT_DATA'],
-      };
-
-      const asyncOperation = asyncOperationStateUtils.getAsyncOperation(state, 'FETCH_APPOINTMENT_DATA_111', fetchAppointmentDataAsyncOperationDescriptor, { orgId: 33 });
-      expect(asyncOperation).to.be.an('object');
-      expect(asyncOperation).to.deep.include({
-        lastFetchStatusTime: 0,
-        lastDataStatusTime: 0,
-      });
-      expect(asyncOperation).to.matchSnapshot('well formed initial read asyncOperation');
     });
   });
 });

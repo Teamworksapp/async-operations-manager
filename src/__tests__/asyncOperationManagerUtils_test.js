@@ -3,9 +3,13 @@ import { expect } from 'chai';
 
 import {
   getAsyncOperationsManagerState,
+  setAsyncOperationsManagerState,
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
+  invalidateAsyncOperation,
 } from '../asyncOperationManagerUtils';
+
+import { ASYNC_OPERATION_STEPS } from '../constants';
 
 import {
   asyncOperationManagerState,
@@ -83,6 +87,20 @@ describe('asyncOperationManagerUtils', () => {
       global.Date.now = dateNowStub;
     });
 
+    it('should return an object containing only operations and descriptors keys', () => {
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_PERSON_DATA',
+          requiredParams: ['personId'],
+          operationType: 'READ',
+        },
+      );
+
+      const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+      expect(newOperationsState).to.have.all.keys('operations', 'descriptors');
+      expect(newOperationsState).to.matchSnapshot('state with only operations and descriptors keys');
+    });
+
     describe('READ async operations', () => {
       it('should update state to read show async operation as pending state from initial state', () => {
         registerAsyncOperationDescriptors(
@@ -93,8 +111,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'BEGIN_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'PENDING' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'PENDING' });
         expect(newOperationsState).to.matchSnapshot('updated state showing begun read async operation');
       });
 
@@ -121,8 +139,9 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'RESOLVE_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
         expect(newOperationsState).to.matchSnapshot('updated state showing successful read async operation');
       });
 
@@ -149,8 +168,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
 
-        const newOperationsState = getStateForOperationAfterStep(state, 'REJECT_ASYNC_OPERATION', 'FETCH_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'FETCH_PERSON_DATA_111.fetchStatus': 'FAILED' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'FETCH_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.FETCH_PERSON_DATA_111.fetchStatus': 'FAILED' });
         expect(newOperationsState).to.matchSnapshot('updated state showing rejected async operation');
       });
     });
@@ -165,8 +184,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'BEGIN_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'PENDING' });
         expect(newOperationsState).to.matchSnapshot('updated state showing pending write async operation');
       });
   
@@ -192,8 +211,8 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'RESOLVE_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'SUCCESSFUL' });
         expect(newOperationsState).to.matchSnapshot('updated state showing successful write async operation');
       });
 
@@ -219,9 +238,43 @@ describe('asyncOperationManagerUtils', () => {
           },
         );
   
-        const newOperationsState = getStateForOperationAfterStep(state, 'REJECT_ASYNC_OPERATION', 'UPDATE_PERSON_DATA', { personId: 111 });
-        expect(newOperationsState).to.nested.include({ 'UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED' });
+        const newOperationsState = getStateForOperationAfterStep(state, ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, 'UPDATE_PERSON_DATA', { personId: 111 });
+        expect(newOperationsState).to.nested.include({ 'operations.UPDATE_PERSON_DATA_111.fetchStatus': 'FAILED' });
         expect(newOperationsState).to.matchSnapshot('updated state showing failed write async operation');
+      });
+    });
+  });
+
+  describe('invalidateAsyncOperation', () => {
+    it('should invalidate an asyncOperation by key', () => {
+      state = {
+        operations: {
+          FETCH_CALENDAR_DATA_33: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
+            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
+            orgId: 33,
+          },
+        },
+      };
+
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          requiredParams: ['orgId'],
+          operationType: 'READ',
+        },
+      );
+
+      setAsyncOperationsManagerState(state);
+
+      const newState = invalidateAsyncOperation('FETCH_CALENDAR_DATA', { orgId: 33 });
+      expect(newState.operations.FETCH_CALENDAR_DATA_33).to.deep.include({
+        lastFetchStatusTime: 0,
+        lastDataStatusTime: 0,
       });
     });
   });
