@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shouldRunOperation = exports.getStateForOperationAfterStep = exports.registerAsyncOperationDescriptors = exports.invalidateAsyncOperationByKey = exports.getAsyncOperation = exports.setAsyncOperationsManagerState = exports.clearAsyncOperationsManagerState = exports.getAsyncOperationsManagerState = void 0;
+exports.shouldRunOperation = exports.getStateForOperationAfterStep = exports.registerAsyncOperationDescriptors = exports.invalidateAsyncOperation = exports.getAsyncOperation = exports.setAsyncOperationsManagerState = exports.clearAsyncOperationsManagerState = exports.getAsyncOperationsManagerState = void 0;
 
 var _lodash = require("lodash");
 
@@ -60,15 +60,15 @@ var registerAsyncOperationDescriptors = function registerAsyncOperationDescripto
 
 exports.registerAsyncOperationDescriptors = registerAsyncOperationDescriptors;
 
-var invalidateAsyncOperationByKey = function invalidateAsyncOperationByKey(asyncOperationKey, descriptorId) {
+var invalidateAsyncOperation = function invalidateAsyncOperation(descriptorId, params) {
   var state = getAsyncOperationsManagerState();
 
-  var newState = _asyncOperationStateUtils.default.setInvalidatedOperationByKeyState(state, asyncOperationKey, descriptorId);
+  var newState = _asyncOperationStateUtils.default.createInvalidatedOperationState(state, descriptorId, params);
 
   return _asyncOperationManagerState.asyncOperationManagerState.setState(newState);
 };
 
-exports.invalidateAsyncOperationByKey = invalidateAsyncOperationByKey;
+exports.invalidateAsyncOperation = invalidateAsyncOperation;
 
 var getAsyncOperation = function getAsyncOperation(state, descriptorId, params, otherFields) {
   var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
@@ -132,16 +132,31 @@ var transformTypeLookup = (_transformTypeLookup = {}, _defineProperty(_transform
 }), _transformTypeLookup); // this function is called in the reducer (in redux integration)
 
 var getStateForOperationAfterStep = function getStateForOperationAfterStep(state, asyncOperationStep, descriptorId, params) {
-  var newState = _asyncOperationManagerState.asyncOperationManagerState.setState(state);
+  // in case operation/descriptor state is initialized in userland we pass that through
+  // to the library state.
+  var newState = setAsyncOperationsManagerState(state);
 
   var _getAsyncOperationInf3 = (0, _helpers.getAsyncOperationInfo)(newState.descriptors, descriptorId, params),
       asyncOperationDescriptor = _getAsyncOperationInf3.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf3.asyncOperationParams,
       asyncOperationKey = _getAsyncOperationInf3.asyncOperationKey,
-      otherFields = _getAsyncOperationInf3.otherFields; // in case operation/descriptor state is initialized in userland we pass that through
-  // to the library state.
+      otherFields = _getAsyncOperationInf3.otherFields; // descriptor asyncOperationStep callbacks
 
 
+  if (asyncOperationDescriptor.onBegin && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION) {
+    asyncOperationDescriptor.onBegin(asyncOperationParams);
+  }
+
+  if (asyncOperationDescriptor.onResolve && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION) {
+    asyncOperationDescriptor.onResolve(asyncOperationParams);
+  }
+
+  if (asyncOperationDescriptor.onReject && asyncOperationStep === _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION) {
+    asyncOperationDescriptor.onReject(asyncOperationParams);
+  } // If any of the asyncOperationStep callbacks changed the state we want to grab the latest state
+
+
+  newState = getAsyncOperationsManagerState();
   var asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
   var newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
   newState = _asyncOperationStateUtils.default.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
