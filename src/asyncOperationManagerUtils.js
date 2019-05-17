@@ -155,14 +155,18 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
   } = getAsyncOperationInfo(newState.descriptors, descriptorId, params);
 
   // descriptor asyncOperationStep callbacks
-  if (asyncOperationDescriptor.onBegin && asyncOperationStep === ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onBegin(asyncOperationParams);
-  }
-  if (asyncOperationDescriptor.onResolve && asyncOperationStep === ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onResolve(asyncOperationParams);
-  }
-  if (asyncOperationDescriptor.onReject && asyncOperationStep === ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION) {
-    asyncOperationDescriptor.onReject(asyncOperationParams);
+  switch (asyncOperationStep) {
+    case ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION:
+      asyncOperationDescriptor.onBegin(asyncOperationParams);
+      break;
+    case ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION:
+      asyncOperationDescriptor.onResolve(asyncOperationParams);
+      break;
+    case ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION:
+      asyncOperationDescriptor.onReject(asyncOperationParams);
+      break;
+    default:
+      break;
   }
 
   // If any of the asyncOperationStep callbacks changed the state we want to grab the latest state
