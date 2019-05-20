@@ -5,11 +5,11 @@ Object {
   "dataStatus": "ABSENT",
   "descriptorId": "FETCH_CALENDAR_DATA",
   "fetchStatus": "NULL",
+  "key": "FETCH_CALENDAR_DATA_22",
   "lastDataStatusTime": 0,
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
-  "operationKey": "FETCH_CALENDAR_DATA_22",
   "orgId": 22,
 }
 `;

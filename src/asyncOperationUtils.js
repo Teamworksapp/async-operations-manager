@@ -63,7 +63,7 @@ const initialWriteAsyncOperation = {
 // operation (which *should* be fetchAllBeveragesForOrg) to seed the initial status.
 const initialReadAsyncOperationForAction = (
   descriptorId,
-  operationKey,
+  key,
   fieldsToAdd = {},
   parentAsyncOperation = null,
 ) => ({
@@ -71,18 +71,18 @@ const initialReadAsyncOperationForAction = (
   ...(parentAsyncOperation ? pick(parentAsyncOperation, readAsyncOperationFieldsToPullFromParent) : {}),
   ...fieldsToAdd,
   descriptorId,
-  operationKey,
+  key,
 });
 
 const initialWriteAsyncOperationForAction = (
   descriptorId,
-  operationKey,
+  key,
   fieldsToAdd = {},
 ) => ({
   ...initialWriteAsyncOperation,
   ...fieldsToAdd,
   descriptorId,
-  operationKey,
+  key,
 });
 
 /**
@@ -119,6 +119,7 @@ const beginWriteAsyncOperation = (
   initialAsyncOperation = initialWriteAsyncOperation,
   fieldsToAdd = {},
 ) => ({
+  ...initialWriteAsyncOperation,
   descriptorId: initialAsyncOperation.descriptorId,
   fetchStatus: FETCH_STATUS.PENDING,
   message: null,

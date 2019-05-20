@@ -6,6 +6,7 @@ Object {
     "dataStatus": "PRESENT",
     "descriptorId": "UPDATE_PERSON_DATA",
     "fetchStatus": "SUCCESSFUL",
+    "key": "UPDATE_PERSON_DATA_111",
     "lastDataStatusTime": "2018-10-01T19:12:53.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:46.189Z",
     "message": null,
@@ -15,6 +16,7 @@ Object {
     "dataStatus": "PRESENT",
     "descriptorId": "UPDATE_TEAM_DATA",
     "fetchStatus": "SUCCESSFUL",
+    "key": "UPDATE_TEAM_DATA_2",
     "lastDataStatusTime": "2018-10-01T19:12:27.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:26.189Z",
     "message": null,
@@ -76,11 +78,11 @@ Object {
   "dataStatus": "ABSENT",
   "descriptorId": "FETCH_PERSON_DATA",
   "fetchStatus": "NULL",
+  "key": "FETCH_PERSON_DATA_111",
   "lastDataStatusTime": 0,
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
-  "operationKey": "FETCH_PERSON_DATA_111",
   "personId": 111,
 }
 `;
@@ -89,9 +91,9 @@ exports[`asyncOperationStateUtils getAsyncOperationFromState should return an in
 Object {
   "descriptorId": "UPDATE_PERSON_DATA",
   "fetchStatus": "NULL",
+  "key": "UPDATE_PERSON_DATA_111",
   "lastFetchStatusTime": 0,
   "message": null,
-  "operationKey": "UPDATE_PERSON_DATA_111",
   "personId": 111,
 }
 `;
@@ -101,6 +103,7 @@ Object {
   "UPDATE_PERSON_DATA_111": Object {
     "descriptorId": "UPDATE_PERSON_DATA",
     "fetchStatus": "SUCCESSFUL",
+    "key": "UPDATE_PERSON_DATA_111",
     "lastDataStatusTime": "2018-10-01T19:12:53.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:46.189Z",
     "message": null,

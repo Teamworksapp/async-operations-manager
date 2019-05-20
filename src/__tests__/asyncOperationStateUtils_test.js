@@ -181,7 +181,7 @@ describe('asyncOperationStateUtils', () => {
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
-        operationKey: 'FETCH_PERSON_DATA_111',
+        key: 'FETCH_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -203,7 +203,7 @@ describe('asyncOperationStateUtils', () => {
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         lastFetchStatusTime: 0,
-        operationKey: 'UPDATE_PERSON_DATA_111',
+        key: 'UPDATE_PERSON_DATA_111',
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });

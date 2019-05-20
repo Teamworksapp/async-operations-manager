@@ -257,6 +257,7 @@ describe('asyncOperationManagerUtils', () => {
             lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
             lastDataStatusTime: '2018-09-01T19:12:53.189Z',
             orgId: 33,
+            key: 'FETCH_CALENDAR_DATA_33',
           },
         },
       };

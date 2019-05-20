@@ -62,6 +62,7 @@ describe('functional tests', () => {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
           personId: 111,
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
       expect(asyncOperationReducer(state, resolveAction).operations).to.deep.equal({
@@ -74,6 +75,7 @@ describe('functional tests', () => {
           lastDataStatusTime: 1530518207007,
           personId: 111,
           lastFetchFailed: false,
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
     });
@@ -93,6 +95,7 @@ describe('functional tests', () => {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
           personId: 111,
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
       expect(asyncOperationReducer(state, rejectAction).operations).to.deep.include({
@@ -105,6 +108,7 @@ describe('functional tests', () => {
           lastDataStatusTime: 0,
           personId: 111,
           lastFetchFailed: true,
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
     });
@@ -153,6 +157,7 @@ describe('functional tests', () => {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
           orgId: 22,
+          key: 'FETCH_CALENDAR_DATA_22',
         },
       });
 
@@ -166,6 +171,7 @@ describe('functional tests', () => {
           lastDataStatusTime: 1530518207007,
           orgId: 22,
           lastFetchFailed: false,
+          key: 'FETCH_CALENDAR_DATA_22',
         },
       });
 
@@ -194,17 +200,22 @@ describe('functional tests', () => {
           lastFetchStatusTime: 1540000000000,
           orgId: 22,
           appointmentId: 111,
+          key: 'UPDATE_APPOINTMENT_DATA_22_111',
         },
       });
 
       expect(asyncOperationReducer(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
         UPDATE_APPOINTMENT_DATA_22_111: {
-          descriptorId: 'UPDATE_APPOINTMENT_DATA',
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,
+          descriptorId: 'FETCH_CALENDAR_DATA',
           orgId: 22,
           appointmentId: 111,
+          key: 'UPDATE_APPOINTMENT_DATA_22_111',
+          dataStatus: 'ABSENT',
+          lastFetchFailed: false,
+          lastDataStatusTime: 0,
         },
       });
 

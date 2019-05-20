@@ -51,6 +51,8 @@ const DATA_STATUS = makeConstantsObject([
   // @TODO: Is it worth tracking an OFFLINE-like state?
 ]);
 
+const WILDCARD = '*';
+
 export {
   readAsyncOperationFieldsToPullFromParent,
 
@@ -58,4 +60,5 @@ export {
   ASYNC_OPERATION_STEPS,
   FETCH_STATUS,
   DATA_STATUS,
+  WILDCARD,
 };

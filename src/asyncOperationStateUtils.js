@@ -3,6 +3,10 @@
 import {
   pick,
   reduce,
+  omitBy,
+  includes,
+  forEach,
+  keys,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -10,6 +14,7 @@ import asyncOperationManagerConfig from './config';
 
 import {
   ASYNC_OPERATION_TYPES,
+  WILDCARD,
   readAsyncOperationFieldsToPullFromParent,
 } from './constants';
 
@@ -56,25 +61,48 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
 };
 
 const createInvalidatedOperationState = (state, descriptorId, params) => {
+  const nonWildcardParams = omitBy(params, param => param === WILDCARD);
+
   const {
     asyncOperationDescriptor,
     asyncOperationKey,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-  const invalidatedOperation = {
-    ...state.operations[asyncOperationKey],
-    ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
-  };
 
-  return {
+  const invalidatedOperations = reduce(state.operations, (acc, operation) => {
+    let paramMatchCount = 0;
+    let invalidatedOperation;
+    forEach(nonWildcardParams, (param) => {
+      if (includes(operation.key, param)) {
+        paramMatchCount += 1;
+        if (paramMatchCount === keys(nonWildcardParams).length) {
+          invalidatedOperation = {
+            ...operation,
+            ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+              ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
+              : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+          };
+        }
+      }
+      return true;
+    });
+    return {
+      ...acc,
+      [operation.key]: invalidatedOperation,
+    };
+  }, {});
+
+  debugger;
+
+  const invalidatedOperationsState = {
     ...state,
     operations: {
       ...state.operations,
-      [asyncOperationKey]: invalidatedOperation,
+      ...invalidatedOperations,
     },
   };
+
+  return invalidatedOperationsState;
 };
 
 // This function will do all the work to determine if an async operation is returned as an initial async operation
@@ -166,12 +194,17 @@ const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOpe
 
   PropTypes.checkPropTypes(asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
-  return {
+  const updatedOperationsState = {
     operations: {
       ...state.operations,
-      [asyncOperationKey]: asyncOperation,
+      [asyncOperationKey]: {
+        ...asyncOperation,
+        key: asyncOperationKey,
+      },
     },
   };
+
+  return updatedOperationsState;
 };
 
 const bulkUpdateAsyncOperations = (state, asyncOperationsList) => {
