@@ -53,7 +53,7 @@ var createInvalidatedOperationState = function createInvalidatedOperationState(s
       asyncOperationKey = _getAsyncOperationInf.asyncOperationKey;
 
   return _objectSpread({}, state, {
-    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey)))
+    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, _objectSpread({}, state.operations[asyncOperationKey], asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey))))
   });
 }; // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
