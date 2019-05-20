@@ -53,7 +53,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111
+          personId: 111,
+          key: 'FETCH_PERSON_DATA_111'
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveAction).operations).to.deep.equal({
@@ -65,7 +66,8 @@ describe('functional tests', function () {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
           personId: 111,
-          lastFetchFailed: false
+          lastFetchFailed: false,
+          key: 'FETCH_PERSON_DATA_111'
         }
       });
     });
@@ -82,7 +84,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111
+          personId: 111,
+          key: 'FETCH_PERSON_DATA_111'
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, rejectAction).operations).to.deep.include({
@@ -94,7 +97,8 @@ describe('functional tests', function () {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
           personId: 111,
-          lastFetchFailed: true
+          lastFetchFailed: true,
+          key: 'FETCH_PERSON_DATA_111'
         }
       });
     });
@@ -138,7 +142,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          orgId: 22
+          orgId: 22,
+          key: 'FETCH_CALENDAR_DATA_22'
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveFetchCalendarDataAction).operations).to.deep.include({
@@ -150,7 +155,8 @@ describe('functional tests', function () {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
           orgId: 22,
-          lastFetchFailed: false
+          lastFetchFailed: false,
+          key: 'FETCH_CALENDAR_DATA_22'
         }
       });
       var dateNowStub = jest.fn(function () {
@@ -177,17 +183,22 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1540000000000,
           orgId: 22,
-          appointmentId: 111
+          appointmentId: 111,
+          key: 'UPDATE_APPOINTMENT_DATA_22_111'
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
         UPDATE_APPOINTMENT_DATA_22_111: {
-          descriptorId: 'UPDATE_APPOINTMENT_DATA',
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,
+          descriptorId: 'FETCH_CALENDAR_DATA',
           orgId: 22,
-          appointmentId: 111
+          appointmentId: 111,
+          key: 'UPDATE_APPOINTMENT_DATA_22_111',
+          dataStatus: 'ABSENT',
+          lastFetchFailed: false,
+          lastDataStatusTime: 0
         }
       });
       var currentState = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();

@@ -48,15 +48,37 @@ var updateAsyncOperationDescriptor = function updateAsyncOperationDescriptor(sta
 };
 
 var createInvalidatedOperationState = function createInvalidatedOperationState(state, descriptorId, params) {
+  var nonWildcardParams = (0, _lodash.omitBy)(params, function (param) {
+    return param === _constants.WILDCARD;
+  });
+
   var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
       asyncOperationDescriptor = _getAsyncOperationInf.asyncOperationDescriptor,
       asyncOperationKey = _getAsyncOperationInf.asyncOperationKey;
 
-  var invalidatedOperation = _objectSpread({}, state.operations[asyncOperationKey], asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey));
+  var invalidatedOperations = (0, _lodash.reduce)(state.operations, function (acc, operation) {
+    var paramMatchCount = 0;
+    var invalidatedOperation;
+    (0, _lodash.forEach)(nonWildcardParams, function (param) {
+      if ((0, _lodash.includes)(operation.key, param)) {
+        paramMatchCount += 1;
 
-  return _objectSpread({}, state, {
-    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, invalidatedOperation))
+        if (paramMatchCount === (0, _lodash.keys)(nonWildcardParams).length) {
+          invalidatedOperation = _objectSpread({}, operation, asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey));
+        }
+      }
+
+      return true;
+    });
+    return _objectSpread({}, acc, _defineProperty({}, operation.key, invalidatedOperation));
+  }, {});
+  debugger;
+
+  var invalidatedOperationsState = _objectSpread({}, state, {
+    operations: _objectSpread({}, state.operations, invalidatedOperations)
   });
+
+  return invalidatedOperationsState;
 }; // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
@@ -139,9 +161,12 @@ var updateAsyncOperation = function updateAsyncOperation(state, asyncOperationKe
 
   _propTypes.default.checkPropTypes(_types.asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
-  return {
-    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, asyncOperation))
+  var updatedOperationsState = {
+    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, _objectSpread({}, asyncOperation, {
+      key: asyncOperationKey
+    })))
   };
+  return updatedOperationsState;
 };
 
 var bulkUpdateAsyncOperations = function bulkUpdateAsyncOperations(state, asyncOperationsList) {

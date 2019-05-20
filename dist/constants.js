@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.DATA_STATUS = exports.FETCH_STATUS = exports.ASYNC_OPERATION_STEPS = exports.ASYNC_OPERATION_TYPES = exports.readAsyncOperationFieldsToPullFromParent = void 0;
+exports.WILDCARD = exports.DATA_STATUS = exports.FETCH_STATUS = exports.ASYNC_OPERATION_STEPS = exports.ASYNC_OPERATION_TYPES = exports.readAsyncOperationFieldsToPullFromParent = void 0;
 
 var _helpers = require("./helpers");
 
@@ -34,4 +34,6 @@ var DATA_STATUS = (0, _helpers.makeConstantsObject)([// Default: we haven't rece
 'ABSENT', // Result was received and we have data
 'PRESENT']);
 exports.DATA_STATUS = DATA_STATUS;
+var WILDCARD = '*';
+exports.WILDCARD = WILDCARD;
 //# sourceMappingURL=constants.js.map

@@ -60,22 +60,22 @@ var initialWriteAsyncOperation = {
 }; // Note that we'll pull in any status (dataStatus, fetchStatus, etc) from the parent
 // operation (which *should* be fetchAllBeveragesForOrg) to seed the initial status.
 
-var initialReadAsyncOperationForAction = function initialReadAsyncOperationForAction(descriptorId, operationKey) {
+var initialReadAsyncOperationForAction = function initialReadAsyncOperationForAction(descriptorId, key) {
   var fieldsToAdd = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var parentAsyncOperation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   return _objectSpread({}, initialReadAsyncOperation, parentAsyncOperation ? (0, _lodash.pick)(parentAsyncOperation, _constants.readAsyncOperationFieldsToPullFromParent) : {}, fieldsToAdd, {
     descriptorId: descriptorId,
-    operationKey: operationKey
+    key: key
   });
 };
 
 exports.initialReadAsyncOperationForAction = initialReadAsyncOperationForAction;
 
-var initialWriteAsyncOperationForAction = function initialWriteAsyncOperationForAction(descriptorId, operationKey) {
+var initialWriteAsyncOperationForAction = function initialWriteAsyncOperationForAction(descriptorId, key) {
   var fieldsToAdd = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   return _objectSpread({}, initialWriteAsyncOperation, fieldsToAdd, {
     descriptorId: descriptorId,
-    operationKey: operationKey
+    key: key
   });
 };
 /**
@@ -119,7 +119,7 @@ exports.beginReadAsyncOperation = beginReadAsyncOperation;
 var beginWriteAsyncOperation = function beginWriteAsyncOperation() {
   var initialAsyncOperation = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialWriteAsyncOperation;
   var fieldsToAdd = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return _objectSpread({
+  return _objectSpread({}, initialWriteAsyncOperation, {
     descriptorId: initialAsyncOperation.descriptorId,
     fetchStatus: _constants.FETCH_STATUS.PENDING,
     message: null,
