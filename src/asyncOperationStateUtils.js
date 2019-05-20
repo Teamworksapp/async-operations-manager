@@ -61,14 +61,18 @@ const createInvalidatedOperationState = (state, descriptorId, params) => {
     asyncOperationKey,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
+  const invalidatedOperation = {
+    ...state.operations[asyncOperationKey],
+    ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
+      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+  };
 
   return {
     ...state,
     operations: {
       ...state.operations,
-      [asyncOperationKey]: asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-        ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
-        : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+      [asyncOperationKey]: invalidatedOperation,
     },
   };
 };
