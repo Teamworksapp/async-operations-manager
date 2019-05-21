@@ -3,6 +3,12 @@
 import {
   pick,
   reduce,
+  omitBy,
+  forIn,
+  get,
+  keys,
+  filter,
+  isEmpty,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -10,6 +16,7 @@ import asyncOperationManagerConfig from './config';
 
 import {
   ASYNC_OPERATION_TYPES,
+  WILDCARD,
   readAsyncOperationFieldsToPullFromParent,
 } from './constants';
 
@@ -56,25 +63,56 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
 };
 
 const createInvalidatedOperationState = (state, descriptorId, params) => {
+  const nonWildcardParams = omitBy(params, param => param === WILDCARD);
+  const matchingDescriptorIdOperations = filter(state.operations, operation => operation.descriptorId === descriptorId);
+
+  if (isEmpty(matchingDescriptorIdOperations)) {
+    return state;
+  }
+
   const {
     asyncOperationDescriptor,
-    asyncOperationKey,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-  const invalidatedOperation = {
-    ...state.operations[asyncOperationKey],
-    ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
-  };
+  const invalidatedOperations = reduce(matchingDescriptorIdOperations, (acc, operation) => {
+    let paramMatchCount = 0;
+    let invalidatedOperation;
+    forIn(nonWildcardParams, (value, key) => {
+      if (get(operation.params, key) === value) {
+        paramMatchCount += 1;
+        if (paramMatchCount === keys(nonWildcardParams).length) {
+          invalidatedOperation = {
+            [operation.key]: {
+              ...operation,
+              ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+                ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key)
+                : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key),
+            },
+          };
+        }
+      }
+      return true;
+    });
 
-  return {
+    if (invalidatedOperation) {
+      return {
+        ...acc,
+        ...invalidatedOperation,
+      };
+    }
+
+    return acc;
+  }, {});
+
+  const invalidatedOperationsState = {
     ...state,
     operations: {
       ...state.operations,
-      [asyncOperationKey]: invalidatedOperation,
+      ...invalidatedOperations,
     },
   };
+
+  return invalidatedOperationsState;
 };
 
 // This function will do all the work to determine if an async operation is returned as an initial async operation
@@ -134,8 +172,8 @@ const getAsyncOperationFromState = ({
       config.logger.verboseLoggingCallback(`asyncOperation not found with given key: ${asyncOperationKey}. Defaulting to an initial asyncOperation`);
     }
     return asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
+      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
+      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   }
 
   // We want to determine whether or not to use that parentAsyncOperation metaData based on the
@@ -153,7 +191,17 @@ const getAsyncOperationFromState = ({
   return asyncOperation;
 };
 
-const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOperationDescriptor) => {
+const updateAsyncOperation = ({
+  state,
+  asyncOperation,
+  params,
+  descriptorId,
+}) => {
+  const {
+    asyncOperationDescriptor,
+    asyncOperationKey,
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
+
   const config = asyncOperationManagerConfig.getConfig();
   if (asyncOperationDescriptor.debug) {
     config.logger.verboseLoggingCallback(`Inside updateAsyncOperation for ${asyncOperationKey}`);
@@ -166,17 +214,29 @@ const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOpe
 
   PropTypes.checkPropTypes(asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
-  return {
+  const updatedOperationsState = {
+    ...state,
     operations: {
       ...state.operations,
-      [asyncOperationKey]: asyncOperation,
+      [asyncOperationKey]: {
+        ...asyncOperation,
+        params,
+        key: asyncOperationKey,
+      },
     },
   };
+
+  return updatedOperationsState;
 };
 
 const bulkUpdateAsyncOperations = (state, asyncOperationsList) => {
-  return reduce(asyncOperationsList, (accumulator, { asyncOperationKey, asyncOperation, asyncOperationDescriptor }) => {
-    return updateAsyncOperation(accumulator, asyncOperationKey, asyncOperation, asyncOperationDescriptor);
+  return reduce(asyncOperationsList, (accumulator, { params, asyncOperation, descriptorId }) => {
+    return updateAsyncOperation({
+      state: accumulator,
+      asyncOperation,
+      params,
+      descriptorId,
+    });
   }, state);
 };
 

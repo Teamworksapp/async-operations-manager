@@ -48,15 +48,47 @@ var updateAsyncOperationDescriptor = function updateAsyncOperationDescriptor(sta
 };
 
 var createInvalidatedOperationState = function createInvalidatedOperationState(state, descriptorId, params) {
-  var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
-      asyncOperationDescriptor = _getAsyncOperationInf.asyncOperationDescriptor,
-      asyncOperationKey = _getAsyncOperationInf.asyncOperationKey;
-
-  var invalidatedOperation = _objectSpread({}, state.operations[asyncOperationKey], asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey));
-
-  return _objectSpread({}, state, {
-    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, invalidatedOperation))
+  var nonWildcardParams = (0, _lodash.omitBy)(params, function (param) {
+    return param === _constants.WILDCARD;
   });
+  var matchingDescriptorIdOperations = (0, _lodash.filter)(state.operations, function (operation) {
+    return operation.descriptorId === descriptorId;
+  });
+
+  if ((0, _lodash.isEmpty)(matchingDescriptorIdOperations)) {
+    return state;
+  }
+
+  var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
+      asyncOperationDescriptor = _getAsyncOperationInf.asyncOperationDescriptor;
+
+  var invalidatedOperations = (0, _lodash.reduce)(matchingDescriptorIdOperations, function (acc, operation) {
+    var paramMatchCount = 0;
+    var invalidatedOperation;
+    (0, _lodash.forIn)(nonWildcardParams, function (value, key) {
+      if ((0, _lodash.get)(operation.params, key) === value) {
+        paramMatchCount += 1;
+
+        if (paramMatchCount === (0, _lodash.keys)(nonWildcardParams).length) {
+          invalidatedOperation = _defineProperty({}, operation.key, _objectSpread({}, operation, asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, operation.params, operation.key) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, operation.params, operation.key)));
+        }
+      }
+
+      return true;
+    });
+
+    if (invalidatedOperation) {
+      return _objectSpread({}, acc, invalidatedOperation);
+    }
+
+    return acc;
+  }, {});
+
+  var invalidatedOperationsState = _objectSpread({}, state, {
+    operations: _objectSpread({}, state.operations, invalidatedOperations)
+  });
+
+  return invalidatedOperationsState;
 }; // This function will do all the work to determine if an async operation is returned as an initial async operation
 // (if it is not found in state), an asyncOperation with parentAsyncOperation metaData (recursively searched to find if the parentAsyncOperation is more
 // up-to-date) or just the asyncOperation itself if the none of the above apply.
@@ -113,7 +145,7 @@ var getAsyncOperationFromState = function getAsyncOperationFromState(_ref) {
       config.logger.verboseLoggingCallback("asyncOperation not found with given key: ".concat(asyncOperationKey, ". Defaulting to an initial asyncOperation"));
     }
 
-    return asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
+    return asyncOperationDescriptor.operationType === _constants.ASYNC_OPERATION_TYPES.READ ? (0, _asyncOperationUtils.initialReadAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation) : (0, _asyncOperationUtils.initialWriteAsyncOperationForAction)(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   } // We want to determine whether or not to use that parentAsyncOperation metaData based on the
   // newness of it's data in comparison to the asyncOperation
 
@@ -125,7 +157,16 @@ var getAsyncOperationFromState = function getAsyncOperationFromState(_ref) {
   return asyncOperation;
 };
 
-var updateAsyncOperation = function updateAsyncOperation(state, asyncOperationKey, asyncOperation, asyncOperationDescriptor) {
+var updateAsyncOperation = function updateAsyncOperation(_ref2) {
+  var state = _ref2.state,
+      asyncOperation = _ref2.asyncOperation,
+      params = _ref2.params,
+      descriptorId = _ref2.descriptorId;
+
+  var _getAsyncOperationInf3 = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
+      asyncOperationDescriptor = _getAsyncOperationInf3.asyncOperationDescriptor,
+      asyncOperationKey = _getAsyncOperationInf3.asyncOperationKey;
+
   var config = _config.default.getConfig();
 
   if (asyncOperationDescriptor.debug) {
@@ -139,17 +180,27 @@ var updateAsyncOperation = function updateAsyncOperation(state, asyncOperationKe
 
   _propTypes.default.checkPropTypes(_types.asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
-  return {
-    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, asyncOperation))
-  };
+  var updatedOperationsState = _objectSpread({}, state, {
+    operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, _objectSpread({}, asyncOperation, {
+      params: params,
+      key: asyncOperationKey
+    })))
+  });
+
+  return updatedOperationsState;
 };
 
 var bulkUpdateAsyncOperations = function bulkUpdateAsyncOperations(state, asyncOperationsList) {
-  return (0, _lodash.reduce)(asyncOperationsList, function (accumulator, _ref2) {
-    var asyncOperationKey = _ref2.asyncOperationKey,
-        asyncOperation = _ref2.asyncOperation,
-        asyncOperationDescriptor = _ref2.asyncOperationDescriptor;
-    return updateAsyncOperation(accumulator, asyncOperationKey, asyncOperation, asyncOperationDescriptor);
+  return (0, _lodash.reduce)(asyncOperationsList, function (accumulator, _ref3) {
+    var params = _ref3.params,
+        asyncOperation = _ref3.asyncOperation,
+        descriptorId = _ref3.descriptorId;
+    return updateAsyncOperation({
+      state: accumulator,
+      asyncOperation: asyncOperation,
+      params: params,
+      descriptorId: descriptorId
+    });
   }, state);
 };
 

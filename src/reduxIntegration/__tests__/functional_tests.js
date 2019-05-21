@@ -48,6 +48,7 @@ describe('functional tests', () => {
     });
 
     it('should update a successful READ operation as expected from start to finish', () => {
+      state = getAsyncOperationsManagerState();
       const resolveAction = createAsyncOperationResolveAction('FETCH_PERSON_DATA', {
         personId: 111,
       });
@@ -56,12 +57,13 @@ describe('functional tests', () => {
       expect(asyncOperationReducer(state, beginAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
-          fetchStatus: FETCH_STATUS.PENDING,
-          dataStatus: DATA_STATUS.ABSENT,
+          fetchStatus: 'PENDING',
+          dataStatus: 'ABSENT',
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
+          params: { personId: 111 },
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
       expect(asyncOperationReducer(state, resolveAction).operations).to.deep.equal({
@@ -72,8 +74,9 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          personId: 111,
           lastFetchFailed: false,
+          params: { personId: 111 },
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
     });
@@ -92,9 +95,11 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
+          params: { personId: 111 },
+          key: 'FETCH_PERSON_DATA_111',
         },
       });
+
       expect(asyncOperationReducer(state, rejectAction).operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
@@ -103,7 +108,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
+          params: { personId: 111 },
+          key: 'FETCH_PERSON_DATA_111',
           lastFetchFailed: true,
         },
       });
@@ -144,6 +150,7 @@ describe('functional tests', () => {
       });
 
       expect(asyncOperationReducer(state, initialFetchCalendarDataAction)).to.deep.equal(state);
+
       expect(asyncOperationReducer(state, beginFetchCalendarDataAction).operations).to.deep.include({
         FETCH_CALENDAR_DATA_22: {
           descriptorId: 'FETCH_CALENDAR_DATA',
@@ -152,7 +159,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          orgId: 22,
+          params: { orgId: 22 },
+          key: 'FETCH_CALENDAR_DATA_22',
         },
       });
 
@@ -164,8 +172,9 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          orgId: 22,
+          params: { orgId: 22 },
           lastFetchFailed: false,
+          key: 'FETCH_CALENDAR_DATA_22',
         },
       });
 
@@ -188,23 +197,23 @@ describe('functional tests', () => {
       expect(asyncOperationReducer(state, initialUpdateAppointmentDataAction)).to.deep.equal(state);
       expect(asyncOperationReducer(state, beginUpdateAppointmentDataAction).operations).to.deep.include({
         UPDATE_APPOINTMENT_DATA_22_111: {
-          descriptorId: 'UPDATE_APPOINTMENT_DATA',
           fetchStatus: FETCH_STATUS.PENDING,
           message: null,
           lastFetchStatusTime: 1540000000000,
-          orgId: 22,
-          appointmentId: 111,
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          params: { orgId: 22, appointmentId: 111 },
+          key: 'UPDATE_APPOINTMENT_DATA_22_111',
         },
       });
 
       expect(asyncOperationReducer(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
         UPDATE_APPOINTMENT_DATA_22_111: {
-          descriptorId: 'UPDATE_APPOINTMENT_DATA',
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,
-          orgId: 22,
-          appointmentId: 111,
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          params: { orgId: 22, appointmentId: 111 },
+          key: 'UPDATE_APPOINTMENT_DATA_22_111',
         },
       });
 

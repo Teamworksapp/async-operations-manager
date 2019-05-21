@@ -126,7 +126,8 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              personId: 111,
+              params: { personId: 111 },
+              key: 'FETCH_PERSON_DATA_111',
             },
           },
         };
@@ -155,7 +156,8 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              personId: 111,
+              params: { personId: 111 },
+              key: 'FETCH_PERSON_DATA_111',
             },
           },
         };
@@ -198,7 +200,8 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              personId: 111,
+              params: { personId: 111 },
+              key: 'UPDATE_PERSON_DATA_111',
             },
           },
         };
@@ -225,7 +228,8 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              personId: 111,
+              params: { personId: 111 },
+              key: 'UPDATE_PERSON_DATA_111',
             },
           },
         };
@@ -246,7 +250,7 @@ describe('asyncOperationManagerUtils', () => {
   });
 
   describe('invalidateAsyncOperation', () => {
-    it('should invalidate an asyncOperation by key', () => {
+    it('should invalidate an asyncOperation with params', () => {
       state = {
         operations: {
           FETCH_CALENDAR_DATA_33: {
@@ -256,7 +260,8 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
             lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            orgId: 33,
+            params: { orgId: 33 },
+            key: 'FETCH_CALENDAR_DATA_33',
           },
         },
       };
@@ -273,6 +278,52 @@ describe('asyncOperationManagerUtils', () => {
 
       const newState = invalidateAsyncOperation('FETCH_CALENDAR_DATA', { orgId: 33 });
       expect(newState.operations.FETCH_CALENDAR_DATA_33).to.deep.include({
+        lastFetchStatusTime: 0,
+        lastDataStatusTime: 0,
+      });
+    });
+    it('should invalidate an asyncOperation with params and wildcard ', () => {
+      state = {
+        operations: {
+          FETCH_APPOINTMENT_DATA_2_33: {
+            descriptorId: 'FETCH_APPOINTMENT_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
+            lastDataStatusTime: '2018-09-01T19:12:53.189Z',
+            params: { appointmentId: 33, orgId: 2 },
+            key: 'FETCH_APPOINTMENT_DATA_2_33',
+          },
+          FETCH_APPOINTMENT_DATA_2_44: {
+            descriptorId: 'FETCH_APPOINTMENT_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: '2018-09-01T19:12:47.189Z',
+            lastDataStatusTime: '2018-09-01T19:12:54.189Z',
+            params: { appointmentId: 44, orgId: 2 },
+            key: 'FETCH_APPOINTMENT_DATA_2_44',
+          },
+        },
+      };
+
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_APPOINTMENT_DATA',
+          requiredParams: ['orgId', 'appointmentId'],
+          operationType: 'READ',
+        },
+      );
+
+      setAsyncOperationsManagerState(state);
+
+      const newState = invalidateAsyncOperation('FETCH_APPOINTMENT_DATA', { orgId: 2, appointmentId: '*' });
+      expect(newState.operations.FETCH_APPOINTMENT_DATA_2_33).to.deep.include({
+        lastFetchStatusTime: 0,
+        lastDataStatusTime: 0,
+      });
+      expect(newState.operations.FETCH_APPOINTMENT_DATA_2_44).to.deep.include({
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
       });

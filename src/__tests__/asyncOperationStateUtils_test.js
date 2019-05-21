@@ -83,22 +83,32 @@ describe('asyncOperationStateUtils', () => {
     });
 
     it('should update state with an asyncOperation', () => {
+      state = {
+        descriptors: {
+          UPDATE_PERSON_DATA: {
+            descriptorId: 'UPDATE_PERSON_DATA',
+            requiredParams: ['personId'],
+            operationType: 'WRITE',
+          },
+        },
+      };
+
       const newAsyncOperation = {
         descriptorId: 'UPDATE_PERSON_DATA',
         fetchStatus: 'SUCCESSFUL',
         message: null,
         lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
         lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-        personId: 111,
+        params: { personId: 111 },
+        key: 'UPDATE_PERSON_DATA_111',
       };
 
-      const asyncOperationDescriptor = {
+      const { operations } = asyncOperationStateUtils.updateAsyncOperation({
+        state,
+        params: { personId: 111 },
+        asyncOperation: newAsyncOperation,
         descriptorId: 'UPDATE_PERSON_DATA',
-        requiredParams: ['personId'],
-        operationType: 'WRITE',
-      };
-
-      const { operations } = asyncOperationStateUtils.updateAsyncOperation(state, 'UPDATE_PERSON_DATA_111', newAsyncOperation, asyncOperationDescriptor);
+      });
       expect(operations).to.have.all.keys('UPDATE_PERSON_DATA_111');
       expect(operations).to.matchSnapshot('state with well formed asyncOperation');
     });
@@ -112,6 +122,21 @@ describe('asyncOperationStateUtils', () => {
     });
 
     it('should update state with multiple async operations', () => {
+      state = {
+        descriptors: {
+          UPDATE_PERSON_DATA: {
+            descriptorId: 'UPDATE_PERSON_DATA',
+            requiredParams: ['personId'],
+            operationType: 'WRITE',
+          },
+          UPDATE_TEAM_DATA: {
+            descriptorId: 'UPDATE_TEAM_DATA',
+            requiredParams: ['teamId'],
+            operationType: 'WRITE',
+          },
+        },
+      };
+
       const asyncOperationUpdates = [
         {
           asyncOperation: {
@@ -121,14 +146,11 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
             lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-            personId: 111,
+            params: { personId: 111 },
+            key: 'UPDATE_PERSON_DATA_111',
           },
-          asyncOperationKey: 'UPDATE_PERSON_DATA_111',
-          asyncOperationDescriptor: {
-            descriptorId: 'UPDATE_PERSON_DATA',
-            requiredParams: ['personId'],
-            operationType: 'WRITE',
-          },
+          params: { personId: 111 },
+          descriptorId: 'UPDATE_PERSON_DATA',
         },
         {
           asyncOperation: {
@@ -138,14 +160,11 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:26.189Z',
             lastDataStatusTime: '2018-10-01T19:12:27.189Z',
-            teamId: 2,
+            params: { teamId: 111 },
+            key: 'UPDATE_TEAM_DATA_2',
           },
-          asyncOperationKey: 'UPDATE_TEAM_DATA_2',
-          asyncOperationDescriptor: {
-            descriptorId: 'UPDATE_TEAM_DATA',
-            requiredParams: ['teamId'],
-            operationType: 'WRITE',
-          },
+          params: { teamId: 2 },
+          descriptorId: 'UPDATE_TEAM_DATA',
         },
       ];
 
@@ -181,7 +200,7 @@ describe('asyncOperationStateUtils', () => {
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
-        operationKey: 'FETCH_PERSON_DATA_111',
+        params: { personId: 111 },
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -203,7 +222,7 @@ describe('asyncOperationStateUtils', () => {
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         lastFetchStatusTime: 0,
-        operationKey: 'UPDATE_PERSON_DATA_111',
+        params: { personId: 111 },
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -218,7 +237,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
             lastDataStatusTime: '2018-10-01T19:12:13.189Z',
-            personId: 111,
+            params: { personId: 111 },
+            key: 'FETCH_PERSON_DATA_111',
           },
         },
       };
@@ -251,7 +271,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
             lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-            personId: 111,
+            params: { personId: 111 },
+            key: 'FETCH_PERSON_DATA_111',
           },
         },
       };
@@ -284,7 +305,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
             lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-            personId: 111,
+            params: { personId: 111 },
+            key: 'FETCH_PERSON_DATA_111',
           },
           FETCH_ALL_PERSON_DATA: {
             descriptorId: 'FETCH_ALL_PERSON_DATA',
@@ -293,6 +315,7 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:13:52.189Z',
             lastDataStatusTime: '2018-10-01T19:13:56.189Z',
+            key: 'FETCH_ALL_PERSON_DATA',
           },
         },
         descriptors: {
@@ -337,7 +360,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
             lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            personId: 111,
+            params: { personId: 111 },
+            key: 'FETCH_PERSON_DATA_111',
           },
           FETCH_ALL_PERSON_DATA_FOR_ORG_22: {
             descriptorId: 'FETCH_ALL_PERSON_DATA_FOR_ORG',
@@ -346,7 +370,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-21T19:13:52.189Z',
             lastDataStatusTime: '2018-09-21T19:13:56.189Z',
-            orgId: 22,
+            params: { orgId: 22 },
+            key: 'FETCH_ALL_PERSON_DATA_FOR_ORG_22',
           },
           FETCH_ALL_DATA_FOR_ORG_22: {
             descriptorId: 'FETCH_ALL_DATA_FOR_ORG',
@@ -355,7 +380,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:16:52.189Z',
             lastDataStatusTime: '2018-10-01T19:23:56.189Z',
-            orgId: 22,
+            params: { orgId: 22 },
+            key: 'FETCH_ALL_DATA_FOR_ORG_22',
           },
         },
         descriptors: {
