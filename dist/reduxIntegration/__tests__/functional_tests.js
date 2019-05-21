@@ -41,6 +41,7 @@ describe('functional tests', function () {
       });
     });
     it('should update a successful READ operation as expected from start to finish', function () {
+      state = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();
       var resolveAction = (0, _asyncOperationReduxUtils.createAsyncOperationResolveAction)('FETCH_PERSON_DATA', {
         personId: 111
       });
@@ -48,12 +49,14 @@ describe('functional tests', function () {
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
-          fetchStatus: _constants.FETCH_STATUS.PENDING,
-          dataStatus: _constants.DATA_STATUS.ABSENT,
+          fetchStatus: 'PENDING',
+          dataStatus: 'ABSENT',
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
+          params: {
+            personId: 111
+          },
           key: 'FETCH_PERSON_DATA_111'
         }
       });
@@ -65,8 +68,10 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          personId: 111,
           lastFetchFailed: false,
+          params: {
+            personId: 111
+          },
           key: 'FETCH_PERSON_DATA_111'
         }
       });
@@ -84,7 +89,9 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
+          params: {
+            personId: 111
+          },
           key: 'FETCH_PERSON_DATA_111'
         }
       });
@@ -96,9 +103,11 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          personId: 111,
-          lastFetchFailed: true,
-          key: 'FETCH_PERSON_DATA_111'
+          params: {
+            personId: 111
+          },
+          key: 'FETCH_PERSON_DATA_111',
+          lastFetchFailed: true
         }
       });
     });
@@ -142,7 +151,9 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          orgId: 22,
+          params: {
+            orgId: 22
+          },
           key: 'FETCH_CALENDAR_DATA_22'
         }
       });
@@ -154,7 +165,9 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          orgId: 22,
+          params: {
+            orgId: 22
+          },
           lastFetchFailed: false,
           key: 'FETCH_CALENDAR_DATA_22'
         }
@@ -178,12 +191,14 @@ describe('functional tests', function () {
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, initialUpdateAppointmentDataAction)).to.deep.equal(state);
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginUpdateAppointmentDataAction).operations).to.deep.include({
         UPDATE_APPOINTMENT_DATA_22_111: {
-          descriptorId: 'UPDATE_APPOINTMENT_DATA',
           fetchStatus: _constants.FETCH_STATUS.PENDING,
           message: null,
           lastFetchStatusTime: 1540000000000,
-          orgId: 22,
-          appointmentId: 111,
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          params: {
+            orgId: 22,
+            appointmentId: 111
+          },
           key: 'UPDATE_APPOINTMENT_DATA_22_111'
         }
       });
@@ -192,13 +207,12 @@ describe('functional tests', function () {
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,
-          descriptorId: 'FETCH_CALENDAR_DATA',
-          orgId: 22,
-          appointmentId: 111,
-          key: 'UPDATE_APPOINTMENT_DATA_22_111',
-          dataStatus: 'ABSENT',
-          lastFetchFailed: false,
-          lastDataStatusTime: 0
+          descriptorId: 'UPDATE_APPOINTMENT_DATA',
+          params: {
+            orgId: 22,
+            appointmentId: 111
+          },
+          key: 'UPDATE_APPOINTMENT_DATA_22_111'
         }
       });
       var currentState = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();

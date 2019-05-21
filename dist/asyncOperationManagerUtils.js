@@ -109,26 +109,26 @@ var shouldRunOperation = function shouldRunOperation(descriptorId, params) {
 
 
 exports.shouldRunOperation = shouldRunOperation;
-var readStepLookup = (_readStepLookup = {}, _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.beginReadAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
-}), _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.resolveReadAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
-}), _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.rejectReadAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
+var readStepLookup = (_readStepLookup = {}, _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.beginReadAsyncOperation)(asyncOperation);
+}), _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.resolveReadAsyncOperation)(asyncOperation);
+}), _defineProperty(_readStepLookup, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.rejectReadAsyncOperation)(asyncOperation);
 }), _readStepLookup); // switchboard for resolving Write operation steps
 
-var writeStepLookup = (_writeStepLookup = {}, _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.beginWriteAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
-}), _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.resolveWriteAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
-}), _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, function (asyncOperation, asyncOperationParams, otherFields) {
-  return (0, _asyncOperationUtils.rejectWriteAsyncOperation)(asyncOperation, asyncOperationParams, otherFields);
+var writeStepLookup = (_writeStepLookup = {}, _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.beginWriteAsyncOperation)(asyncOperation);
+}), _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.resolveWriteAsyncOperation)(asyncOperation);
+}), _defineProperty(_writeStepLookup, _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION, function (asyncOperation) {
+  return (0, _asyncOperationUtils.rejectWriteAsyncOperation)(asyncOperation);
 }), _writeStepLookup); // first switchboard to transform an async operation
 
-var transformTypeLookup = (_transformTypeLookup = {}, _defineProperty(_transformTypeLookup, _constants.ASYNC_OPERATION_TYPES.READ, function (asyncOperation, asyncOperationStep, asyncOperationParams, otherFields) {
-  return readStepLookup[asyncOperationStep](asyncOperation, asyncOperationParams, otherFields);
-}), _defineProperty(_transformTypeLookup, _constants.ASYNC_OPERATION_TYPES.WRITE, function (asyncOperation, asyncOperationStep, asyncOperationParams, otherFields) {
-  return writeStepLookup[asyncOperationStep](asyncOperation, asyncOperationParams, otherFields);
+var transformTypeLookup = (_transformTypeLookup = {}, _defineProperty(_transformTypeLookup, _constants.ASYNC_OPERATION_TYPES.READ, function (asyncOperation, asyncOperationStep) {
+  return readStepLookup[asyncOperationStep](asyncOperation);
+}), _defineProperty(_transformTypeLookup, _constants.ASYNC_OPERATION_TYPES.WRITE, function (asyncOperation, asyncOperationStep) {
+  return writeStepLookup[asyncOperationStep](asyncOperation);
 }), _transformTypeLookup); // this function is called in the reducer (in redux integration)
 
 var getStateForOperationAfterStep = function getStateForOperationAfterStep(state, asyncOperationStep, descriptorId, params) {
@@ -139,7 +139,6 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
   var _getAsyncOperationInf3 = (0, _helpers.getAsyncOperationInfo)(newState.descriptors, descriptorId, params),
       asyncOperationDescriptor = _getAsyncOperationInf3.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf3.asyncOperationParams,
-      asyncOperationKey = _getAsyncOperationInf3.asyncOperationKey,
       otherFields = _getAsyncOperationInf3.otherFields; // descriptor asyncOperationStep callbacks
 
 
@@ -172,8 +171,13 @@ var getStateForOperationAfterStep = function getStateForOperationAfterStep(state
 
   newState = getAsyncOperationsManagerState();
   var asyncOperationToTranform = getAsyncOperation(newState, descriptorId, asyncOperationParams, otherFields);
-  var newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams, otherFields);
-  newState = _asyncOperationStateUtils.default.updateAsyncOperation(newState, asyncOperationKey, newAsyncOperation, asyncOperationDescriptor);
+  var newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep);
+  newState = _asyncOperationStateUtils.default.updateAsyncOperation({
+    state: newState,
+    asyncOperation: newAsyncOperation,
+    params: asyncOperationParams,
+    descriptorId: descriptorId
+  });
   return _asyncOperationManagerState.asyncOperationManagerState.setState(newState);
 };
 
