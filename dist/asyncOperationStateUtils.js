@@ -180,12 +180,13 @@ var updateAsyncOperation = function updateAsyncOperation(_ref2) {
 
   _propTypes.default.checkPropTypes(_types.asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
-  var updatedOperationsState = {
+  var updatedOperationsState = _objectSpread({}, state, {
     operations: _objectSpread({}, state.operations, _defineProperty({}, asyncOperationKey, _objectSpread({}, asyncOperation, {
       params: params,
       key: asyncOperationKey
     })))
-  };
+  });
+
   return updatedOperationsState;
 };
 
@@ -195,7 +196,7 @@ var bulkUpdateAsyncOperations = function bulkUpdateAsyncOperations(state, asyncO
         asyncOperation = _ref3.asyncOperation,
         descriptorId = _ref3.descriptorId;
     return updateAsyncOperation({
-      accumulator: accumulator,
+      state: accumulator,
       asyncOperation: asyncOperation,
       params: params,
       descriptorId: descriptorId
