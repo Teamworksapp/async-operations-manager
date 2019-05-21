@@ -4,9 +4,11 @@ import {
   pick,
   reduce,
   omitBy,
-  includes,
-  forEach,
+  forIn,
+  get,
   keys,
+  filter,
+  isEmpty,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -62,37 +64,45 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
 
 const createInvalidatedOperationState = (state, descriptorId, params) => {
   const nonWildcardParams = omitBy(params, param => param === WILDCARD);
+  const matchingDescriptorIdOperations = filter(state.operations, operation => operation.descriptorId === descriptorId);
+
+  if (isEmpty(matchingDescriptorIdOperations)) {
+    return state;
+  }
 
   const {
     asyncOperationDescriptor,
-    asyncOperationKey,
   } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
 
-
-  const invalidatedOperations = reduce(state.operations, (acc, operation) => {
+  const invalidatedOperations = reduce(matchingDescriptorIdOperations, (acc, operation) => {
     let paramMatchCount = 0;
     let invalidatedOperation;
-    forEach(nonWildcardParams, (param) => {
-      if (includes(operation.key, param)) {
+    forIn(nonWildcardParams, (value, key) => {
+      if (get(operation.params, key) === value) {
         paramMatchCount += 1;
         if (paramMatchCount === keys(nonWildcardParams).length) {
           invalidatedOperation = {
-            ...operation,
-            ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-              ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey)
-              : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey),
+            [operation.key]: {
+              ...operation,
+              ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
+                ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key)
+                : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key),
+            },
           };
         }
       }
       return true;
     });
-    return {
-      ...acc,
-      [operation.key]: invalidatedOperation,
-    };
-  }, {});
 
-  debugger;
+    if (invalidatedOperation) {
+      return {
+        ...acc,
+        ...invalidatedOperation,
+      };
+    }
+
+    return acc;
+  }, {});
 
   const invalidatedOperationsState = {
     ...state,
@@ -162,8 +172,8 @@ const getAsyncOperationFromState = ({
       config.logger.verboseLoggingCallback(`asyncOperation not found with given key: ${asyncOperationKey}. Defaulting to an initial asyncOperation`);
     }
     return asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
+      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
+      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
   }
 
   // We want to determine whether or not to use that parentAsyncOperation metaData based on the
@@ -181,7 +191,17 @@ const getAsyncOperationFromState = ({
   return asyncOperation;
 };
 
-const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOperationDescriptor) => {
+const updateAsyncOperation = ({
+  state,
+  asyncOperation,
+  params,
+  descriptorId,
+}) => {
+  const {
+    asyncOperationDescriptor,
+    asyncOperationKey,
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
+
   const config = asyncOperationManagerConfig.getConfig();
   if (asyncOperationDescriptor.debug) {
     config.logger.verboseLoggingCallback(`Inside updateAsyncOperation for ${asyncOperationKey}`);
@@ -199,6 +219,7 @@ const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOpe
       ...state.operations,
       [asyncOperationKey]: {
         ...asyncOperation,
+        params,
         key: asyncOperationKey,
       },
     },
@@ -208,8 +229,13 @@ const updateAsyncOperation = (state, asyncOperationKey, asyncOperation, asyncOpe
 };
 
 const bulkUpdateAsyncOperations = (state, asyncOperationsList) => {
-  return reduce(asyncOperationsList, (accumulator, { asyncOperationKey, asyncOperation, asyncOperationDescriptor }) => {
-    return updateAsyncOperation(accumulator, asyncOperationKey, asyncOperation, asyncOperationDescriptor);
+  return reduce(asyncOperationsList, (accumulator, { params, asyncOperation, descriptorId }) => {
+    return updateAsyncOperation({
+      accumulator,
+      asyncOperation,
+      params,
+      descriptorId,
+    });
   }, state);
 };
 

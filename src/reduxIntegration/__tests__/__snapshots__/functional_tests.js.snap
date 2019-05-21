@@ -10,6 +10,8 @@ Object {
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
-  "orgId": 22,
+  "params": Object {
+    "orgId": 22,
+  },
 }
 `;

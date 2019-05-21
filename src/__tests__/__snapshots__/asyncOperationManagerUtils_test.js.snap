@@ -44,7 +44,9 @@ Object {
       "lastFetchFailed": true,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -76,7 +78,9 @@ Object {
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -109,7 +113,9 @@ Object {
       "lastFetchFailed": false,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -140,7 +146,9 @@ Object {
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -170,7 +178,9 @@ Object {
       "key": "UPDATE_PERSON_DATA_111",
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -201,7 +211,9 @@ Object {
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
@@ -233,7 +245,9 @@ Object {
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "personId": 111,
+      "params": Object {
+        "personId": 111,
+      },
     },
   },
 }
