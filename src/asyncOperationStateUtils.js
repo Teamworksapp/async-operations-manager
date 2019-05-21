@@ -215,6 +215,7 @@ const updateAsyncOperation = ({
   PropTypes.checkPropTypes(asyncOperationPropType, asyncOperation, 'prop', 'asyncOperation');
 
   const updatedOperationsState = {
+    ...state,
     operations: {
       ...state.operations,
       [asyncOperationKey]: {
@@ -231,7 +232,7 @@ const updateAsyncOperation = ({
 const bulkUpdateAsyncOperations = (state, asyncOperationsList) => {
   return reduce(asyncOperationsList, (accumulator, { params, asyncOperation, descriptorId }) => {
     return updateAsyncOperation({
-      accumulator,
+      state: accumulator,
       asyncOperation,
       params,
       descriptorId,

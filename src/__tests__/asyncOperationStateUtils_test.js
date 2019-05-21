@@ -75,7 +75,7 @@ describe('asyncOperationStateUtils', () => {
     });
   });
 
-  describe.only('updateAsyncOperation', () => {
+  describe('updateAsyncOperation', () => {
     let state;
     beforeEach(() => {
       asyncOperationManagerState.clearState();
@@ -216,7 +216,7 @@ describe('asyncOperationStateUtils', () => {
         state,
         asyncOperationKey: 'UPDATE_PERSON_DATA_111',
         asyncOperationDescriptor,
-        params: { personId: 111 },
+        asyncOperationParams: { personId: 111 },
       });
 
       expect(asyncOperation).to.deep.include({
