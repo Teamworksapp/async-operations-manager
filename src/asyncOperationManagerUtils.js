@@ -10,6 +10,7 @@ import {
   isArray,
   isEmpty,
   reduce,
+  has,
 } from 'lodash';
 
 import asyncOperationStateUtils from './asyncOperationStateUtils';
@@ -95,10 +96,14 @@ const getAsyncOperation = (
 const shouldRunOperation = (descriptorId, params) => {
   const state = asyncOperationManagerState.getState();
 
+  // @TODO: createAsyncOperationAction functions in reduxIntegration need to have another argument to specify AOM parameters
+  // so we can place them in a params property on the action
+  const actualParams = has(params, 'params') ? params.params : params;
+
   const {
     asyncOperationDescriptor,
     asyncOperationParams,
-  } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, actualParams);
 
   const asyncOperation = getAsyncOperation(
     state,
