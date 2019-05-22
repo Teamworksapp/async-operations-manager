@@ -92,9 +92,13 @@ var getAsyncOperation = function getAsyncOperation(state, descriptorId, params, 
 exports.getAsyncOperation = getAsyncOperation;
 
 var shouldRunOperation = function shouldRunOperation(descriptorId, params) {
-  var state = _asyncOperationManagerState.asyncOperationManagerState.getState();
+  var state = _asyncOperationManagerState.asyncOperationManagerState.getState(); // @TODO: createAsyncOperationAction functions in reduxIntegration need to have another argument to specify AOM parameters
+  // so we can place them in a params property on the action
 
-  var _getAsyncOperationInf2 = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, params),
+
+  var actualParams = (0, _lodash.has)(params, 'params') ? params.params : params;
+
+  var _getAsyncOperationInf2 = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, actualParams),
       asyncOperationDescriptor = _getAsyncOperationInf2.asyncOperationDescriptor,
       asyncOperationParams = _getAsyncOperationInf2.asyncOperationParams;
 
