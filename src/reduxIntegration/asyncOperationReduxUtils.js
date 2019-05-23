@@ -4,11 +4,27 @@ import {
   ASYNC_OPERATION_STEPS,
 } from '../constants';
 
+import {
+  getAsyncOperationInfo,
+} from '../helpers';
+
+import {
+  getAsyncOperationsManagerState,
+} from '../asyncOperationManagerUtils';
+
 const createAsyncOperationInitialAction = (descriptorId, action) => {
+  const state = getAsyncOperationsManagerState();
+  const {
+    asyncOperationParams: params,
+    asyncOperationKey: key,
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, action);
+
   return {
     ...action,
     type: descriptorId,
     descriptorId,
+    params,
+    key,
   };
 };
 

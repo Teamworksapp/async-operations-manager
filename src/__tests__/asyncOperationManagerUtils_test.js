@@ -7,6 +7,7 @@ import {
   registerAsyncOperationDescriptors,
   getStateForOperationAfterStep,
   invalidateAsyncOperation,
+  shouldRunOperation,
 } from '../asyncOperationManagerUtils';
 
 import { ASYNC_OPERATION_STEPS } from '../constants';
@@ -17,6 +18,7 @@ import {
 
 const initialState = {
   operations: {},
+  descriptors: {},
 };
 
 describe('asyncOperationManagerUtils', () => {
@@ -327,6 +329,72 @@ describe('asyncOperationManagerUtils', () => {
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
       });
+    });
+  });
+  describe('shouldRunOperation', () => {
+    beforeEach(() => {
+      const dateNowStub = jest.fn(() => 1530518207007);
+      global.Date.now = dateNowStub;
+    });
+
+    it('should allow operation to run', () => {
+      state = {
+        operations: {
+          FETCH_CALENDAR_DATA_33: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: 1530018207007,
+            lastDataStatusTime: 1530018207007,
+            params: { orgId: 33 },
+            key: 'FETCH_CALENDAR_DATA_33',
+          },
+        },
+      };
+
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          requiredParams: ['orgId'],
+          operationType: 'READ',
+        },
+      );
+
+      setAsyncOperationsManagerState(state);
+
+      const operationShouldRun = shouldRunOperation('FETCH_CALENDAR_DATA', { orgId: 33 });
+      expect(operationShouldRun).to.be.true;
+    });
+    it('should not allow operation to run', () => {
+      state = {
+        operations: {
+          FETCH_CALENDAR_DATA_33: {
+            descriptorId: 'FETCH_CALENDAR_DATA',
+            fetchStatus: 'SUCCESSFUL',
+            dataStatus: 'PRESENT',
+            message: null,
+            lastFetchStatusTime: 1530518207002,
+            lastDataStatusTime: 1530518207004,
+            params: { orgId: 33 },
+            key: 'FETCH_CALENDAR_DATA_33',
+          },
+        },
+      };
+
+      registerAsyncOperationDescriptors(
+        {
+          descriptorId: 'FETCH_CALENDAR_DATA',
+          requiredParams: ['orgId'],
+          operationType: 'READ',
+          minCacheTime: 5000,
+        },
+      );
+
+      setAsyncOperationsManagerState(state);
+
+      const operationShouldRun = shouldRunOperation('FETCH_CALENDAR_DATA', { orgId: 33 });
+      expect(operationShouldRun).to.be.false;
     });
   });
 });

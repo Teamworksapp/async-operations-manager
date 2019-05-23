@@ -7,6 +7,10 @@ exports.getActionForAsyncOperation = exports.getAsyncOperationResolveActionType 
 
 var _constants = require("../constants");
 
+var _helpers = require("../helpers");
+
+var _asyncOperationManagerUtils = require("../asyncOperationManagerUtils");
+
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
@@ -16,9 +20,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var createAsyncOperationInitialAction = function createAsyncOperationInitialAction(descriptorId, action) {
+  var state = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();
+
+  var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, action),
+      params = _getAsyncOperationInf.asyncOperationParams,
+      key = _getAsyncOperationInf.asyncOperationKey;
+
   return _objectSpread({}, action, {
     type: descriptorId,
-    descriptorId: descriptorId
+    descriptorId: descriptorId,
+    params: params,
+    key: key
   });
 };
 
