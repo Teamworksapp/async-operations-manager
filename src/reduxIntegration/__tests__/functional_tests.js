@@ -54,6 +54,7 @@ describe('functional tests', () => {
       });
 
       expect(asyncOperationReducer(state, initialAction)).to.deep.equal(state);
+      debugger;
       expect(asyncOperationReducer(state, beginAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',

@@ -13,7 +13,7 @@ function asyncOperationReducer(state = getAsyncOperationsManagerState(), action)
   if (includes(ASYNC_OPERATION_STEPS, action.operationStep) && action.descriptorId) {
     return {
       ...state,
-      ...getStateForOperationAfterStep(state, action.operationStep, action.descriptorId, action),
+      ...getStateForOperationAfterStep(state, action.operationStep, action.descriptorId, action.params),
     };
   }
   return state;

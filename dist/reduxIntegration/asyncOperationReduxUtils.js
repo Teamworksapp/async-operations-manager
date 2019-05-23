@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getActionForAsyncOperation = exports.getAsyncOperationResolveActionType = exports.createAsyncOperationRejectAction = exports.createAsyncOperationResolveAction = exports.createAsyncOperationBeginAction = exports.createAsyncOperationInitialAction = void 0;
 
+var _lodash = require("lodash");
+
 var _constants = require("../constants");
 
 var _helpers = require("../helpers");
@@ -19,48 +21,85 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var createAsyncOperationInitialAction = function createAsyncOperationInitialAction(descriptorId, action) {
+var pullParamsAndKeyFromAction = function pullParamsAndKeyFromAction(descriptorId, action) {
   var state = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();
 
   var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, action),
       params = _getAsyncOperationInf.asyncOperationParams,
       key = _getAsyncOperationInf.asyncOperationKey;
 
-  return _objectSpread({}, action, {
+  var actionWithoutParams = (0, _lodash.omit)(action, (0, _lodash.keys)(params));
+  return {
+    actionWithoutParams: actionWithoutParams,
+    params: params,
+    key: key
+  };
+};
+
+var createAsyncOperationInitialAction = function createAsyncOperationInitialAction(descriptorId, action) {
+  var _pullParamsAndKeyFrom = pullParamsAndKeyFromAction(descriptorId, action),
+      actionWithoutParams = _pullParamsAndKeyFrom.actionWithoutParams,
+      params = _pullParamsAndKeyFrom.params,
+      key = _pullParamsAndKeyFrom.key;
+
+  var initialAsyncOperationAction = _objectSpread({}, actionWithoutParams, {
     type: descriptorId,
     descriptorId: descriptorId,
     params: params,
     key: key
   });
+
+  return initialAsyncOperationAction;
 };
 
 exports.createAsyncOperationInitialAction = createAsyncOperationInitialAction;
 
 var createAsyncOperationBeginAction = function createAsyncOperationBeginAction(descriptorId, action) {
-  return _objectSpread({}, action, {
+  var _pullParamsAndKeyFrom2 = pullParamsAndKeyFromAction(descriptorId, action),
+      actionWithoutParams = _pullParamsAndKeyFrom2.actionWithoutParams,
+      params = _pullParamsAndKeyFrom2.params,
+      key = _pullParamsAndKeyFrom2.key;
+
+  return _objectSpread({}, actionWithoutParams, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
-    type: "AOM//BEGIN__".concat(descriptorId)
+    type: "AOM//BEGIN__".concat(descriptorId),
+    params: params,
+    key: key
   });
 };
 
 exports.createAsyncOperationBeginAction = createAsyncOperationBeginAction;
 
 var createAsyncOperationResolveAction = function createAsyncOperationResolveAction(descriptorId, action) {
-  return _objectSpread({}, action, {
+  var _pullParamsAndKeyFrom3 = pullParamsAndKeyFromAction(descriptorId, action),
+      actionWithoutParams = _pullParamsAndKeyFrom3.actionWithoutParams,
+      params = _pullParamsAndKeyFrom3.params,
+      key = _pullParamsAndKeyFrom3.key;
+
+  return _objectSpread({}, actionWithoutParams, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
-    type: "AOM//RESOLVE__".concat(descriptorId)
+    type: "AOM//RESOLVE__".concat(descriptorId),
+    params: params,
+    key: key
   });
 };
 
 exports.createAsyncOperationResolveAction = createAsyncOperationResolveAction;
 
 var createAsyncOperationRejectAction = function createAsyncOperationRejectAction(descriptorId, action) {
-  return _objectSpread({}, action, {
+  var _pullParamsAndKeyFrom4 = pullParamsAndKeyFromAction(descriptorId, action),
+      actionWithoutParams = _pullParamsAndKeyFrom4.actionWithoutParams,
+      params = _pullParamsAndKeyFrom4.params,
+      key = _pullParamsAndKeyFrom4.key;
+
+  return _objectSpread({}, actionWithoutParams, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION,
-    type: "AOM//REJECT__".concat(descriptorId)
+    type: "AOM//REJECT__".concat(descriptorId),
+    params: params,
+    key: key
   });
 };
 
