@@ -46,6 +46,7 @@ describe('functional tests', function () {
         personId: 111
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, initialAction)).to.deep.equal(state);
+      debugger;
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginAction).operations).to.deep.equal({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
