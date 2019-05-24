@@ -45,9 +45,10 @@ describe('functional tests', function () {
       var resolveAction = (0, _asyncOperationReduxUtils.createAsyncOperationResolveAction)('FETCH_PERSON_DATA', {
         personId: 111
       });
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, initialAction)).to.deep.equal(state);
-      debugger;
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginAction).operations).to.deep.equal({
+      var initialActionState = (0, _asyncOperationReducer.default)(state, initialAction);
+      (0, _chai.expect)(initialActionState).to.deep.equal(state);
+      var beginActionState = (0, _asyncOperationReducer.default)(state, beginAction);
+      (0, _chai.expect)(beginActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: 'PENDING',
@@ -55,13 +56,11 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: {
-            personId: 111
-          },
-          key: 'FETCH_PERSON_DATA_111'
+          personId: 111
         }
       });
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveAction).operations).to.deep.equal({
+      var resolveActionState = (0, _asyncOperationReducer.default)(state, resolveAction);
+      (0, _chai.expect)(resolveActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: _constants.FETCH_STATUS.SUCCESSFUL,
@@ -70,10 +69,7 @@ describe('functional tests', function () {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
           lastFetchFailed: false,
-          params: {
-            personId: 111
-          },
-          key: 'FETCH_PERSON_DATA_111'
+          personId: 111
         }
       });
     });
@@ -81,8 +77,10 @@ describe('functional tests', function () {
       var rejectAction = (0, _asyncOperationReduxUtils.createAsyncOperationRejectAction)('FETCH_PERSON_DATA', {
         personId: 111
       });
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, initialAction)).to.deep.equal(state);
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginAction).operations).to.deep.include({
+      var initialActionState = (0, _asyncOperationReducer.default)(state, initialAction);
+      (0, _chai.expect)(initialActionState).to.deep.equal(state);
+      var beginActionState = (0, _asyncOperationReducer.default)(state, beginAction);
+      (0, _chai.expect)(beginActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: _constants.FETCH_STATUS.PENDING,
@@ -90,13 +88,11 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: {
-            personId: 111
-          },
-          key: 'FETCH_PERSON_DATA_111'
+          personId: 111
         }
       });
-      (0, _chai.expect)((0, _asyncOperationReducer.default)(state, rejectAction).operations).to.deep.include({
+      var rejectActionState = (0, _asyncOperationReducer.default)(state, rejectAction);
+      (0, _chai.expect)(rejectActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: _constants.FETCH_STATUS.FAILED,
@@ -104,11 +100,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: {
-            personId: 111
-          },
-          key: 'FETCH_PERSON_DATA_111',
-          lastFetchFailed: true
+          lastFetchFailed: true,
+          personId: 111
         }
       });
     });
@@ -152,10 +145,7 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: {
-            orgId: 22
-          },
-          key: 'FETCH_CALENDAR_DATA_22'
+          orgId: 22
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveFetchCalendarDataAction).operations).to.deep.include({
@@ -166,11 +156,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          params: {
-            orgId: 22
-          },
           lastFetchFailed: false,
-          key: 'FETCH_CALENDAR_DATA_22'
+          orgId: 22
         }
       });
       var dateNowStub = jest.fn(function () {
@@ -196,11 +183,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1540000000000,
           descriptorId: 'UPDATE_APPOINTMENT_DATA',
-          params: {
-            orgId: 22,
-            appointmentId: 111
-          },
-          key: 'UPDATE_APPOINTMENT_DATA_22_111'
+          orgId: 22,
+          appointmentId: 111
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
@@ -209,11 +193,8 @@ describe('functional tests', function () {
           message: null,
           lastFetchStatusTime: 1540000000000,
           descriptorId: 'UPDATE_APPOINTMENT_DATA',
-          params: {
-            orgId: 22,
-            appointmentId: 111
-          },
-          key: 'UPDATE_APPOINTMENT_DATA_22_111'
+          orgId: 22,
+          appointmentId: 111
         }
       });
       var currentState = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();

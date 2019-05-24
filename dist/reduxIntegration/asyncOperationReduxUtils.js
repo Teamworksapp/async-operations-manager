@@ -5,13 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getActionForAsyncOperation = exports.getAsyncOperationResolveActionType = exports.createAsyncOperationRejectAction = exports.createAsyncOperationResolveAction = exports.createAsyncOperationBeginAction = exports.createAsyncOperationInitialAction = void 0;
 
-var _lodash = require("lodash");
-
 var _constants = require("../constants");
-
-var _helpers = require("../helpers");
-
-var _asyncOperationManagerUtils = require("../asyncOperationManagerUtils");
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -21,32 +15,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var pullParamsAndKeyFromAction = function pullParamsAndKeyFromAction(descriptorId, action) {
-  var state = (0, _asyncOperationManagerUtils.getAsyncOperationsManagerState)();
-
-  var _getAsyncOperationInf = (0, _helpers.getAsyncOperationInfo)(state.descriptors, descriptorId, action),
-      params = _getAsyncOperationInf.asyncOperationParams,
-      key = _getAsyncOperationInf.asyncOperationKey;
-
-  var actionWithoutParams = (0, _lodash.omit)(action, (0, _lodash.keys)(params));
-  return {
-    actionWithoutParams: actionWithoutParams,
-    params: params,
-    key: key
-  };
-};
-
 var createAsyncOperationInitialAction = function createAsyncOperationInitialAction(descriptorId, action) {
-  var _pullParamsAndKeyFrom = pullParamsAndKeyFromAction(descriptorId, action),
-      actionWithoutParams = _pullParamsAndKeyFrom.actionWithoutParams,
-      params = _pullParamsAndKeyFrom.params,
-      key = _pullParamsAndKeyFrom.key;
-
-  var initialAsyncOperationAction = _objectSpread({}, actionWithoutParams, {
+  var initialAsyncOperationAction = _objectSpread({}, action, {
     type: descriptorId,
-    descriptorId: descriptorId,
-    params: params,
-    key: key
+    descriptorId: descriptorId
   });
 
   return initialAsyncOperationAction;
@@ -55,51 +27,30 @@ var createAsyncOperationInitialAction = function createAsyncOperationInitialActi
 exports.createAsyncOperationInitialAction = createAsyncOperationInitialAction;
 
 var createAsyncOperationBeginAction = function createAsyncOperationBeginAction(descriptorId, action) {
-  var _pullParamsAndKeyFrom2 = pullParamsAndKeyFromAction(descriptorId, action),
-      actionWithoutParams = _pullParamsAndKeyFrom2.actionWithoutParams,
-      params = _pullParamsAndKeyFrom2.params,
-      key = _pullParamsAndKeyFrom2.key;
-
-  return _objectSpread({}, actionWithoutParams, {
+  return _objectSpread({}, action, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION,
-    type: "AOM//BEGIN__".concat(descriptorId),
-    params: params,
-    key: key
+    type: "AOM//BEGIN__".concat(descriptorId)
   });
 };
 
 exports.createAsyncOperationBeginAction = createAsyncOperationBeginAction;
 
 var createAsyncOperationResolveAction = function createAsyncOperationResolveAction(descriptorId, action) {
-  var _pullParamsAndKeyFrom3 = pullParamsAndKeyFromAction(descriptorId, action),
-      actionWithoutParams = _pullParamsAndKeyFrom3.actionWithoutParams,
-      params = _pullParamsAndKeyFrom3.params,
-      key = _pullParamsAndKeyFrom3.key;
-
-  return _objectSpread({}, actionWithoutParams, {
+  return _objectSpread({}, action, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION,
-    type: "AOM//RESOLVE__".concat(descriptorId),
-    params: params,
-    key: key
+    type: "AOM//RESOLVE__".concat(descriptorId)
   });
 };
 
 exports.createAsyncOperationResolveAction = createAsyncOperationResolveAction;
 
 var createAsyncOperationRejectAction = function createAsyncOperationRejectAction(descriptorId, action) {
-  var _pullParamsAndKeyFrom4 = pullParamsAndKeyFromAction(descriptorId, action),
-      actionWithoutParams = _pullParamsAndKeyFrom4.actionWithoutParams,
-      params = _pullParamsAndKeyFrom4.params,
-      key = _pullParamsAndKeyFrom4.key;
-
-  return _objectSpread({}, actionWithoutParams, {
+  return _objectSpread({}, action, {
     descriptorId: descriptorId,
     operationStep: _constants.ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION,
-    type: "AOM//REJECT__".concat(descriptorId),
-    params: params,
-    key: key
+    type: "AOM//REJECT__".concat(descriptorId)
   });
 };
 

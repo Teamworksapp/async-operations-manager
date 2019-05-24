@@ -20,7 +20,7 @@ function asyncOperationReducer() {
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   if ((0, _lodash.includes)(_constants.ASYNC_OPERATION_STEPS, action.operationStep) && action.descriptorId) {
-    return _objectSpread({}, state, (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, action.operationStep, action.descriptorId, action.params));
+    return _objectSpread({}, state, (0, _asyncOperationManagerUtils.getStateForOperationAfterStep)(state, action.operationStep, action.descriptorId, action));
   }
 
   return state;
