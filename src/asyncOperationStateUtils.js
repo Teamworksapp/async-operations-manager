@@ -22,7 +22,6 @@ import {
 
 import {
   getAsyncOperationInfo,
-  getAndValidateParams,
 } from './helpers';
 
 import {
