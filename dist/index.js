@@ -43,7 +43,8 @@ var _default = {
   ASYNC_OPERATION_TYPES: _constants.ASYNC_OPERATION_TYPES,
   ASYNC_OPERATION_STEPS: _constants.ASYNC_OPERATION_STEPS,
   FETCH_STATUS: _constants.FETCH_STATUS,
-  DATA_STATUS: _constants.DATA_STATUS
+  DATA_STATUS: _constants.DATA_STATUS,
+  WILDCARD: _constants.WILDCARD
 };
 exports.default = _default;
 //# sourceMappingURL=index.js.map
