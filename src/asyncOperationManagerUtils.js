@@ -117,29 +117,29 @@ const shouldRunOperation = (descriptorId, params) => {
 // switchboard for resolving the Read operation steps
 const readStepLookup = {
   [ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION]:
-    asyncOperation => beginReadAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => beginReadAsyncOperation(asyncOperation, asyncOperationParams),
   [ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION]:
-    asyncOperation => resolveReadAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => resolveReadAsyncOperation(asyncOperation, asyncOperationParams),
   [ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION]:
-    asyncOperation => rejectReadAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => rejectReadAsyncOperation(asyncOperation, asyncOperationParams),
 };
 
 // switchboard for resolving Write operation steps
 const writeStepLookup = {
   [ASYNC_OPERATION_STEPS.BEGIN_ASYNC_OPERATION]:
-    asyncOperation => beginWriteAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => beginWriteAsyncOperation(asyncOperation, asyncOperationParams),
   [ASYNC_OPERATION_STEPS.RESOLVE_ASYNC_OPERATION]:
-    asyncOperation => resolveWriteAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => resolveWriteAsyncOperation(asyncOperation, asyncOperationParams),
   [ASYNC_OPERATION_STEPS.REJECT_ASYNC_OPERATION]:
-    asyncOperation => rejectWriteAsyncOperation(asyncOperation),
+    (asyncOperation, asyncOperationParams) => rejectWriteAsyncOperation(asyncOperation, asyncOperationParams),
 };
 
 // first switchboard to transform an async operation
 const transformTypeLookup = {
   [ASYNC_OPERATION_TYPES.READ]:
-    (asyncOperation, asyncOperationStep) => readStepLookup[asyncOperationStep](asyncOperation),
+    (asyncOperation, asyncOperationStep, asyncOperationParams) => readStepLookup[asyncOperationStep](asyncOperation, asyncOperationParams),
   [ASYNC_OPERATION_TYPES.WRITE]:
-    (asyncOperation, asyncOperationStep) => writeStepLookup[asyncOperationStep](asyncOperation),
+    (asyncOperation, asyncOperationStep, asyncOperationParams) => writeStepLookup[asyncOperationStep](asyncOperation, asyncOperationParams),
 };
 
 // this function is called in the reducer (in redux integration)
@@ -185,7 +185,7 @@ const getStateForOperationAfterStep = (state, asyncOperationStep, descriptorId, 
     otherFields,
   );
 
-  const newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep);
+  const newAsyncOperation = transformTypeLookup[asyncOperationDescriptor.operationType](asyncOperationToTranform, asyncOperationStep, asyncOperationParams);
 
   newState = asyncOperationStateUtils.updateAsyncOperation({
     state: newState,

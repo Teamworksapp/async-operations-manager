@@ -53,9 +53,11 @@ describe('functional tests', () => {
         personId: 111,
       });
 
-      expect(asyncOperationReducer(state, initialAction)).to.deep.equal(state);
-      debugger;
-      expect(asyncOperationReducer(state, beginAction).operations).to.deep.equal({
+      const initialActionState = asyncOperationReducer(state, initialAction);
+      expect(initialActionState).to.deep.equal(state);
+
+      const beginActionState = asyncOperationReducer(state, beginAction);
+      expect(beginActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: 'PENDING',
@@ -63,11 +65,12 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: { personId: 111 },
-          key: 'FETCH_PERSON_DATA_111',
+          personId: 111,
         },
       });
-      expect(asyncOperationReducer(state, resolveAction).operations).to.deep.equal({
+
+      const resolveActionState = asyncOperationReducer(state, resolveAction);
+      expect(resolveActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.SUCCESSFUL,
@@ -76,8 +79,7 @@ describe('functional tests', () => {
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
           lastFetchFailed: false,
-          params: { personId: 111 },
-          key: 'FETCH_PERSON_DATA_111',
+          personId: 111,
         },
       });
     });
@@ -87,8 +89,11 @@ describe('functional tests', () => {
         personId: 111,
       });
 
-      expect(asyncOperationReducer(state, initialAction)).to.deep.equal(state);
-      expect(asyncOperationReducer(state, beginAction).operations).to.deep.include({
+      const initialActionState = asyncOperationReducer(state, initialAction);
+      expect(initialActionState).to.deep.equal(state);
+
+      const beginActionState = asyncOperationReducer(state, beginAction);
+      expect(beginActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.PENDING,
@@ -96,12 +101,12 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: { personId: 111 },
-          key: 'FETCH_PERSON_DATA_111',
+          personId: 111,
         },
       });
 
-      expect(asyncOperationReducer(state, rejectAction).operations).to.deep.include({
+      const rejectActionState = asyncOperationReducer(state, rejectAction);
+      expect(rejectActionState.operations).to.deep.include({
         FETCH_PERSON_DATA_111: {
           descriptorId: 'FETCH_PERSON_DATA',
           fetchStatus: FETCH_STATUS.FAILED,
@@ -109,9 +114,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: { personId: 111 },
-          key: 'FETCH_PERSON_DATA_111',
           lastFetchFailed: true,
+          personId: 111,
         },
       });
     });
@@ -160,8 +164,7 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 0,
-          params: { orgId: 22 },
-          key: 'FETCH_CALENDAR_DATA_22',
+          orgId: 22,
         },
       });
 
@@ -173,9 +176,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1530518207007,
           lastDataStatusTime: 1530518207007,
-          params: { orgId: 22 },
           lastFetchFailed: false,
-          key: 'FETCH_CALENDAR_DATA_22',
+          orgId: 22,
         },
       });
 
@@ -202,8 +204,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1540000000000,
           descriptorId: 'UPDATE_APPOINTMENT_DATA',
-          params: { orgId: 22, appointmentId: 111 },
-          key: 'UPDATE_APPOINTMENT_DATA_22_111',
+          orgId: 22,
+          appointmentId: 111,
         },
       });
 
@@ -213,8 +215,8 @@ describe('functional tests', () => {
           message: null,
           lastFetchStatusTime: 1540000000000,
           descriptorId: 'UPDATE_APPOINTMENT_DATA',
-          params: { orgId: 22, appointmentId: 111 },
-          key: 'UPDATE_APPOINTMENT_DATA_22_111',
+          orgId: 22,
+          appointmentId: 111,
         },
       });
 
