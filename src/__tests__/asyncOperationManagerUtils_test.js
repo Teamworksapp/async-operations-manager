@@ -128,8 +128,7 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              params: { personId: 111 },
-              key: 'FETCH_PERSON_DATA_111',
+              personId: 111,
             },
           },
         };
@@ -158,8 +157,7 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              params: { personId: 111 },
-              key: 'FETCH_PERSON_DATA_111',
+              personId: 111,
             },
           },
         };
@@ -202,8 +200,7 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              params: { personId: 111 },
-              key: 'UPDATE_PERSON_DATA_111',
+              personId: 111,
             },
           },
         };
@@ -230,8 +227,7 @@ describe('asyncOperationManagerUtils', () => {
               message: null,
               lastFetchStatusTime: 0,
               lastDataStatusTime: 0,
-              params: { personId: 111 },
-              key: 'UPDATE_PERSON_DATA_111',
+              personId: 111,
             },
           },
         };
@@ -262,8 +258,7 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
             lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            params: { orgId: 33 },
-            key: 'FETCH_CALENDAR_DATA_33',
+            orgId: 33,
           },
         },
       };
@@ -294,8 +289,8 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-01T19:12:46.189Z',
             lastDataStatusTime: '2018-09-01T19:12:53.189Z',
-            params: { appointmentId: 33, orgId: 2 },
-            key: 'FETCH_APPOINTMENT_DATA_2_33',
+            appointmentId: 33,
+            orgId: 2,
           },
           FETCH_APPOINTMENT_DATA_2_44: {
             descriptorId: 'FETCH_APPOINTMENT_DATA',
@@ -304,8 +299,8 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-09-01T19:12:47.189Z',
             lastDataStatusTime: '2018-09-01T19:12:54.189Z',
-            params: { appointmentId: 44, orgId: 2 },
-            key: 'FETCH_APPOINTMENT_DATA_2_44',
+            appointmentId: 44,
+            orgId: 2,
           },
         },
       };
@@ -347,8 +342,7 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: 1530018207007,
             lastDataStatusTime: 1530018207007,
-            params: { orgId: 33 },
-            key: 'FETCH_CALENDAR_DATA_33',
+            orgId: 33,
           },
         },
       };
@@ -376,8 +370,7 @@ describe('asyncOperationManagerUtils', () => {
             message: null,
             lastFetchStatusTime: 1530518207002,
             lastDataStatusTime: 1530518207004,
-            params: { orgId: 33 },
-            key: 'FETCH_CALENDAR_DATA_33',
+            orgId: 33,
           },
         },
       };

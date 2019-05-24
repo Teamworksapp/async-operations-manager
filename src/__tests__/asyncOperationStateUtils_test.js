@@ -99,13 +99,12 @@ describe('asyncOperationStateUtils', () => {
         message: null,
         lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
         lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-        params: { personId: 111 },
+        personId: 111,
         key: 'UPDATE_PERSON_DATA_111',
       };
 
       const { operations } = asyncOperationStateUtils.updateAsyncOperation({
         state,
-        params: { personId: 111 },
         asyncOperation: newAsyncOperation,
         descriptorId: 'UPDATE_PERSON_DATA',
       });
@@ -146,10 +145,8 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:46.189Z',
             lastDataStatusTime: '2018-10-01T19:12:53.189Z',
-            params: { personId: 111 },
-            key: 'UPDATE_PERSON_DATA_111',
+            personId: 111,
           },
-          params: { personId: 111 },
           descriptorId: 'UPDATE_PERSON_DATA',
         },
         {
@@ -160,10 +157,9 @@ describe('asyncOperationStateUtils', () => {
             message: null,
             lastFetchStatusTime: '2018-10-01T19:12:26.189Z',
             lastDataStatusTime: '2018-10-01T19:12:27.189Z',
-            params: { teamId: 111 },
+            teamId: 2,
             key: 'UPDATE_TEAM_DATA_2',
           },
-          params: { teamId: 2 },
           descriptorId: 'UPDATE_TEAM_DATA',
         },
       ];
@@ -200,7 +196,7 @@ describe('asyncOperationStateUtils', () => {
         dataStatus: 'ABSENT',
         lastFetchStatusTime: 0,
         lastDataStatusTime: 0,
-        params: { personId: 111 },
+        personId: 111,
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });
@@ -222,7 +218,7 @@ describe('asyncOperationStateUtils', () => {
       expect(asyncOperation).to.deep.include({
         fetchStatus: 'NULL',
         lastFetchStatusTime: 0,
-        params: { personId: 111 },
+        personId: 111,
       });
       expect(asyncOperation).to.matchSnapshot('well formed initial asyncOperation');
     });

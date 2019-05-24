@@ -39,14 +39,11 @@ Object {
       "dataStatus": "ABSENT",
       "descriptorId": "FETCH_PERSON_DATA",
       "fetchStatus": "FAILED",
-      "key": "FETCH_PERSON_DATA_111",
       "lastDataStatusTime": 0,
       "lastFetchFailed": true,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -74,13 +71,10 @@ Object {
       "dataStatus": "ABSENT",
       "descriptorId": "FETCH_PERSON_DATA",
       "fetchStatus": "PENDING",
-      "key": "FETCH_PERSON_DATA_111",
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -108,14 +102,11 @@ Object {
       "dataStatus": "PRESENT",
       "descriptorId": "FETCH_PERSON_DATA",
       "fetchStatus": "SUCCESSFUL",
-      "key": "FETCH_PERSON_DATA_111",
       "lastDataStatusTime": 1530518207007,
       "lastFetchFailed": false,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -142,13 +133,10 @@ Object {
     "UPDATE_PERSON_DATA_111": Object {
       "descriptorId": "UPDATE_PERSON_DATA",
       "fetchStatus": "FAILED",
-      "key": "UPDATE_PERSON_DATA_111",
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -175,12 +163,9 @@ Object {
     "UPDATE_PERSON_DATA_111": Object {
       "descriptorId": "UPDATE_PERSON_DATA",
       "fetchStatus": "PENDING",
-      "key": "UPDATE_PERSON_DATA_111",
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -207,13 +192,10 @@ Object {
     "UPDATE_PERSON_DATA_111": Object {
       "descriptorId": "UPDATE_PERSON_DATA",
       "fetchStatus": "SUCCESSFUL",
-      "key": "UPDATE_PERSON_DATA_111",
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }
@@ -241,13 +223,10 @@ Object {
       "dataStatus": "ABSENT",
       "descriptorId": "FETCH_PERSON_DATA",
       "fetchStatus": "PENDING",
-      "key": "FETCH_PERSON_DATA_111",
       "lastDataStatusTime": 0,
       "lastFetchStatusTime": 1530518207007,
       "message": null,
-      "params": Object {
-        "personId": 111,
-      },
+      "personId": 111,
     },
   },
 }

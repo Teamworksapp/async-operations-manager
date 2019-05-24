@@ -78,15 +78,20 @@ const createInvalidatedOperationState = (state, descriptorId, params) => {
     let paramMatchCount = 0;
     let invalidatedOperation;
     forIn(nonWildcardParams, (value, key) => {
-      if (get(operation.params, key) === value) {
+      const {
+        asyncOperationParams,
+        asyncOperationKey,
+      } = getAsyncOperationInfo(state.descriptors, descriptorId, operation);
+
+      if (get(asyncOperationParams, key) === value) {
         paramMatchCount += 1;
         if (paramMatchCount === keys(nonWildcardParams).length) {
           invalidatedOperation = {
-            [operation.key]: {
+            [asyncOperationKey]: {
               ...operation,
               ...asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-                ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key)
-                : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, operation.params, operation.key),
+                ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams)
+                : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams),
             },
           };
         }
@@ -172,8 +177,8 @@ const getAsyncOperationFromState = ({
       config.logger.verboseLoggingCallback(`asyncOperation not found with given key: ${asyncOperationKey}. Defaulting to an initial asyncOperation`);
     }
     return asyncOperationDescriptor.operationType === ASYNC_OPERATION_TYPES.READ
-      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation)
-      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, asyncOperationParams, asyncOperationKey, fieldsToAddToAction, parentAsyncOperation);
+      ? initialReadAsyncOperationForAction(asyncOperationDescriptor.descriptorId, fieldsToAddToAction, parentAsyncOperation)
+      : initialWriteAsyncOperationForAction(asyncOperationDescriptor.descriptorId, fieldsToAddToAction);
   }
 
   // We want to determine whether or not to use that parentAsyncOperation metaData based on the
@@ -194,13 +199,12 @@ const getAsyncOperationFromState = ({
 const updateAsyncOperation = ({
   state,
   asyncOperation,
-  params,
   descriptorId,
 }) => {
   const {
     asyncOperationDescriptor,
     asyncOperationKey,
-  } = getAsyncOperationInfo(state.descriptors, descriptorId, params);
+  } = getAsyncOperationInfo(state.descriptors, descriptorId, asyncOperation);
 
   const config = asyncOperationManagerConfig.getConfig();
   if (asyncOperationDescriptor.debug) {
@@ -218,11 +222,7 @@ const updateAsyncOperation = ({
     ...state,
     operations: {
       ...state.operations,
-      [asyncOperationKey]: {
-        ...asyncOperation,
-        params,
-        key: asyncOperationKey,
-      },
+      [asyncOperationKey]: asyncOperation,
     },
   };
 
@@ -230,11 +230,10 @@ const updateAsyncOperation = ({
 };
 
 const bulkUpdateAsyncOperations = (state, asyncOperationsList) => {
-  return reduce(asyncOperationsList, (accumulator, { params, asyncOperation, descriptorId }) => {
+  return reduce(asyncOperationsList, (accumulator, { asyncOperation, descriptorId }) => {
     return updateAsyncOperation({
       state: accumulator,
       asyncOperation,
-      params,
       descriptorId,
     });
   }, state);

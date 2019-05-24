@@ -17,6 +17,7 @@ import {
   ASYNC_OPERATION_STEPS,
   FETCH_STATUS,
   DATA_STATUS,
+  WILDCARD,
 } from './constants';
 
 import {
@@ -51,4 +52,5 @@ export default {
   ASYNC_OPERATION_STEPS,
   FETCH_STATUS,
   DATA_STATUS,
+  WILDCARD,
 };

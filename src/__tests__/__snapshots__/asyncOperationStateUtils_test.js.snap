@@ -6,13 +6,10 @@ Object {
     "dataStatus": "PRESENT",
     "descriptorId": "UPDATE_PERSON_DATA",
     "fetchStatus": "SUCCESSFUL",
-    "key": "UPDATE_PERSON_DATA_111",
     "lastDataStatusTime": "2018-10-01T19:12:53.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:46.189Z",
     "message": null,
-    "params": Object {
-      "personId": 111,
-    },
+    "personId": 111,
   },
   "UPDATE_TEAM_DATA_2": Object {
     "dataStatus": "PRESENT",
@@ -22,9 +19,7 @@ Object {
     "lastDataStatusTime": "2018-10-01T19:12:27.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:26.189Z",
     "message": null,
-    "params": Object {
-      "teamId": 2,
-    },
+    "teamId": 2,
   },
 }
 `;
@@ -94,14 +89,10 @@ Object {
   "dataStatus": "ABSENT",
   "descriptorId": "FETCH_PERSON_DATA",
   "fetchStatus": "NULL",
-  "key": "FETCH_PERSON_DATA_111",
   "lastDataStatusTime": 0,
   "lastFetchFailed": false,
   "lastFetchStatusTime": 0,
   "message": null,
-  "params": Object {
-    "personId": 111,
-  },
   "personId": 111,
 }
 `;
@@ -110,12 +101,8 @@ exports[`asyncOperationStateUtils getAsyncOperationFromState should return an in
 Object {
   "descriptorId": "UPDATE_PERSON_DATA",
   "fetchStatus": "NULL",
-  "key": "UPDATE_PERSON_DATA_111",
   "lastFetchStatusTime": 0,
   "message": null,
-  "params": Object {
-    "personId": 111,
-  },
   "personId": 111,
 }
 `;
@@ -129,9 +116,7 @@ Object {
     "lastDataStatusTime": "2018-10-01T19:12:53.189Z",
     "lastFetchStatusTime": "2018-10-01T19:12:46.189Z",
     "message": null,
-    "params": Object {
-      "personId": 111,
-    },
+    "personId": 111,
   },
 }
 `;
