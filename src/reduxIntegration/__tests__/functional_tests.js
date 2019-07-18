@@ -199,7 +199,7 @@ describe('functional tests', () => {
 
       expect(asyncOperationReducer(state, initialUpdateAppointmentDataAction)).to.deep.equal(state);
       expect(asyncOperationReducer(state, beginUpdateAppointmentDataAction).operations).to.deep.include({
-        UPDATE_APPOINTMENT_DATA_22_111: {
+        UPDATE_APPOINTMENT_DATA_111_22: {
           fetchStatus: FETCH_STATUS.PENDING,
           message: null,
           lastFetchStatusTime: 1540000000000,
@@ -210,7 +210,7 @@ describe('functional tests', () => {
       });
 
       expect(asyncOperationReducer(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
-        UPDATE_APPOINTMENT_DATA_22_111: {
+        UPDATE_APPOINTMENT_DATA_111_22: {
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,
