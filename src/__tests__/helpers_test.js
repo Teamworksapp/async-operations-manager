@@ -40,6 +40,14 @@ describe('helpers', () => {
       const asyncOperationKey = generateAsyncOperationKey('UPDATE_KITTY_DATA', { orgId: 222, personId: 111, catIds: ["person_1246_25292", "person_1246_25271", "person_1246_25291"] });
       expect(asyncOperationKey).to.equal('UPDATE_KITTY_DATA_111_222_person_1246_25271,person_1246_25291,person_1246_25292');
     });
+    it('should create an asyncOperation key with unsorted params in a third order', () => {
+      const asyncOperationKey = generateAsyncOperationKey('UPDATE_KITTY_DATA', { personId: 222, orgId: 111, catIds: ["person_1246_25292", "person_1246_25271", "person_1246_25291"] });
+      expect(asyncOperationKey).to.equal('UPDATE_KITTY_DATA_111_222_person_1246_25271,person_1246_25291,person_1246_25292');
+    });
+    it('should create an asyncOperation key with unsorted params in a fourth order', () => {
+      const asyncOperationKey = generateAsyncOperationKey('UPDATE_KITTY_DATA', { personId: 111, orgId: 222, catIds: ["person_1246_25292", "person_1246_25271", "person_1246_25291"] });
+      expect(asyncOperationKey).to.equal('UPDATE_KITTY_DATA_111_222_person_1246_25271,person_1246_25291,person_1246_25292');
+    });
     it('should throw an exception if a label is not provided', () => {
       const { logger } = asyncOperationManagerConfig.getConfig();
       generateAsyncOperationKey();
