@@ -36,7 +36,14 @@ var generateAsyncOperationKey = function generateAsyncOperationKey(descriptorId)
   }
 
   if (!(0, _lodash.isEmpty)(params)) {
-    baseAsyncOperationKey = "".concat(baseAsyncOperationKey, "_").concat((0, _lodash.values)(params).join('_'));
+    var sortedParamValues = (0, _lodash.values)(params);
+    sortedParamValues.forEach(function (entry) {
+      if ((0, _lodash.isArray)(entry)) {
+        entry.sort();
+      }
+    });
+    sortedParamValues.sort();
+    baseAsyncOperationKey = "".concat(baseAsyncOperationKey, "_").concat(sortedParamValues.join('_'));
   }
 
   return baseAsyncOperationKey;

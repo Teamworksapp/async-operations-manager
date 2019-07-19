@@ -178,7 +178,7 @@ describe('functional tests', function () {
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, initialUpdateAppointmentDataAction)).to.deep.equal(state);
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, beginUpdateAppointmentDataAction).operations).to.deep.include({
-        UPDATE_APPOINTMENT_DATA_22_111: {
+        UPDATE_APPOINTMENT_DATA_111_22: {
           fetchStatus: _constants.FETCH_STATUS.PENDING,
           message: null,
           lastFetchStatusTime: 1540000000000,
@@ -188,7 +188,7 @@ describe('functional tests', function () {
         }
       });
       (0, _chai.expect)((0, _asyncOperationReducer.default)(state, resolveUpdateAppointmentDataAction).operations).to.deep.include({
-        UPDATE_APPOINTMENT_DATA_22_111: {
+        UPDATE_APPOINTMENT_DATA_111_22: {
           fetchStatus: 'SUCCESSFUL',
           message: null,
           lastFetchStatusTime: 1540000000000,

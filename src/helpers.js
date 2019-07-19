@@ -5,6 +5,7 @@ import {
   every,
   keyBy,
   has,
+  isArray,
   isEmpty,
   isString,
   isUndefined,
@@ -32,7 +33,14 @@ const generateAsyncOperationKey = (descriptorId, params = {}) => {
   }
 
   if (!isEmpty(params)) {
-    baseAsyncOperationKey = `${baseAsyncOperationKey}_${values(params).join('_')}`;
+    let sortedParamValues = values(params);
+    sortedParamValues.forEach((entry) => {
+      if (isArray(entry)) {
+        entry.sort();
+      }
+    });
+    sortedParamValues.sort();
+    baseAsyncOperationKey = `${baseAsyncOperationKey}_${sortedParamValues.join('_')}`;
   }
 
   return baseAsyncOperationKey;
