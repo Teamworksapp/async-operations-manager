@@ -70,7 +70,7 @@ var createInvalidatedOperationState = function createInvalidatedOperationState(s
           asyncOperationParams = _getAsyncOperationInf2.asyncOperationParams,
           asyncOperationKey = _getAsyncOperationInf2.asyncOperationKey;
 
-      if ((0, _lodash.get)(asyncOperationParams, key) === value) {
+      if ((0, _lodash.isEqual)((0, _lodash.get)(asyncOperationParams, key), value)) {
         paramMatchCount += 1;
 
         if (paramMatchCount === (0, _lodash.keys)(nonWildcardParams).length) {

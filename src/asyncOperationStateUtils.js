@@ -1,6 +1,7 @@
 
 // TODO: JSDocify every function
 import {
+  isEqual,
   pick,
   reduce,
   omitBy,
@@ -52,7 +53,7 @@ const updateAsyncOperationDescriptor = (state, descriptorOptions) => {
   };
 
   PropTypes.checkPropTypes(asyncOperationDescriptorPropType, asyncOperationDescriptor, 'prop', 'asyncOperationDescriptor');
-  
+
   return {
     ...state,
     descriptors: {
@@ -83,7 +84,7 @@ const createInvalidatedOperationState = (state, descriptorId, params) => {
         asyncOperationKey,
       } = getAsyncOperationInfo(state.descriptors, descriptorId, operation);
 
-      if (get(asyncOperationParams, key) === value) {
+      if (isEqual(get(asyncOperationParams, key), value)) {
         paramMatchCount += 1;
         if (paramMatchCount === keys(nonWildcardParams).length) {
           invalidatedOperation = {
