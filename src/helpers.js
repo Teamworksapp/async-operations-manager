@@ -13,10 +13,10 @@ import {
   pick,
   omit,
   some,
-  values,
-} from 'lodash';
+  values
+} from "lodash";
 
-import asyncOperationManagerConfig from './config';
+import asyncOperationManagerConfig from "./config";
 
 const makeConstantsObject = (sourceValues = [], extraOverrides = {}) =>
   Object.freeze(
@@ -24,23 +24,30 @@ const makeConstantsObject = (sourceValues = [], extraOverrides = {}) =>
     assign(keyBy(sourceValues), extraOverrides)
   );
 
-
 const generateAsyncOperationKey = (descriptorId, params = {}) => {
   const config = asyncOperationManagerConfig.getConfig();
   let baseAsyncOperationKey = descriptorId;
   if (!descriptorId || !isString(descriptorId)) {
-    config.logger.exceptionsCallback('A descriptorId string to create the async operation key was not provided');
+    config.logger.exceptionsCallback(
+      "A descriptorId string to create the async operation key was not provided"
+    );
   }
 
   if (!isEmpty(params)) {
     let sortedParamValues = values(params);
-    sortedParamValues.forEach((entry) => {
+
+    sortedParamValues = sortedParamValues.map(entry => {
       if (isArray(entry)) {
-        entry.sort();
+        return [...entry].sort();
       }
+
+      return entry;
     });
+
     sortedParamValues.sort();
-    baseAsyncOperationKey = `${baseAsyncOperationKey}_${sortedParamValues.join('_')}`;
+    baseAsyncOperationKey = `${baseAsyncOperationKey}_${sortedParamValues.join(
+      "_"
+    )}`;
   }
 
   return baseAsyncOperationKey;
@@ -49,19 +56,31 @@ const generateAsyncOperationKey = (descriptorId, params = {}) => {
 const getAndValidateParams = (paramsToCheck, asyncOperationDescriptor) => {
   // Pick out designated required and optional params exclusively.
   const asyncOperationParams = {
-    ...asyncOperationDescriptor.requiredParams ? pick(paramsToCheck, asyncOperationDescriptor.requiredParams) : {},
-    ...asyncOperationDescriptor.optionalParams ? pick(paramsToCheck, asyncOperationDescriptor.optionalParams) : {},
+    ...(asyncOperationDescriptor.requiredParams
+      ? pick(paramsToCheck, asyncOperationDescriptor.requiredParams)
+      : {}),
+    ...(asyncOperationDescriptor.optionalParams
+      ? pick(paramsToCheck, asyncOperationDescriptor.optionalParams)
+      : {})
   };
 
   const { logger } = asyncOperationManagerConfig.getConfig();
   if (asyncOperationDescriptor.requiredParams) {
     // make sure that every requiredParams is included in the asyncOperationParams object and that
     // none of the values are undefined
-    if (!every(asyncOperationDescriptor.requiredParams, partial(has, asyncOperationParams)) ||
-      (asyncOperationParams && some(asyncOperationParams, paramValue => isUndefined(paramValue)))) {
+    if (
+      !every(
+        asyncOperationDescriptor.requiredParams,
+        partial(has, asyncOperationParams)
+      ) ||
+      (asyncOperationParams &&
+        some(asyncOperationParams, paramValue => isUndefined(paramValue)))
+    ) {
       // This warning is here just to catch typos
       logger.exceptionsCallback(`
-        It looks like ${asyncOperationDescriptor.descriptorId} is missing a param/requiredParams.
+        It looks like ${
+          asyncOperationDescriptor.descriptorId
+        } is missing a param/requiredParams.
         requiredParams provided: : ${Object.keys(asyncOperationParams)}
         requiredParams: : ${asyncOperationDescriptor.requiredParams}
       `);
@@ -71,37 +90,56 @@ const getAndValidateParams = (paramsToCheck, asyncOperationDescriptor) => {
   return asyncOperationParams;
 };
 
-const getAsyncOperationDescriptor = (asyncOperationDescriptors, descriptorId) => {
+const getAsyncOperationDescriptor = (
+  asyncOperationDescriptors,
+  descriptorId
+) => {
   const config = asyncOperationManagerConfig.getConfig();
   const asyncOperationDescriptor = asyncOperationDescriptors[descriptorId];
 
   if (!asyncOperationDescriptor) {
-    config.logger.warningsCallback(`descriptorId "${descriptorId}" does not match with any registered async operation descriptor`);
+    config.logger.warningsCallback(
+      `descriptorId "${descriptorId}" does not match with any registered async operation descriptor`
+    );
     return null;
   }
 
   if (asyncOperationDescriptor.debug) {
-    config.logger.verboseLoggingCallback(`Inside getAsyncOperationDescriptor for ${descriptorId}`);
-    config.logger.infoLoggingCallback('getAsyncOperationDescriptor [Data Snapshot]:', {
-      asyncOperationDescriptors,
-      asyncOperationDescriptor,
-    });
+    config.logger.verboseLoggingCallback(
+      `Inside getAsyncOperationDescriptor for ${descriptorId}`
+    );
+    config.logger.infoLoggingCallback(
+      "getAsyncOperationDescriptor [Data Snapshot]:",
+      {
+        asyncOperationDescriptors,
+        asyncOperationDescriptor
+      }
+    );
   }
 
   return asyncOperationDescriptor;
 };
 
 const getAsyncOperationInfo = (descriptors, descriptorId, params) => {
-  const asyncOperationDescriptor = getAsyncOperationDescriptor(descriptors, descriptorId);
-  const asyncOperationParams = getAndValidateParams(params, asyncOperationDescriptor);
-  const asyncOperationKey = generateAsyncOperationKey(descriptorId, asyncOperationParams);
+  const asyncOperationDescriptor = getAsyncOperationDescriptor(
+    descriptors,
+    descriptorId
+  );
+  const asyncOperationParams = getAndValidateParams(
+    params,
+    asyncOperationDescriptor
+  );
+  const asyncOperationKey = generateAsyncOperationKey(
+    descriptorId,
+    asyncOperationParams
+  );
   const otherFields = omit(params, asyncOperationDescriptor.requiredParams);
 
   return {
     asyncOperationDescriptor,
     asyncOperationParams,
     asyncOperationKey,
-    otherFields,
+    otherFields
   };
 };
 
@@ -110,5 +148,5 @@ export {
   generateAsyncOperationKey,
   getAndValidateParams,
   getAsyncOperationInfo,
-  getAsyncOperationDescriptor,
+  getAsyncOperationDescriptor
 };

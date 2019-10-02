@@ -15,6 +15,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 var makeConstantsObject = function makeConstantsObject() {
   var sourceValues = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var extraOverrides = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -32,18 +40,20 @@ var generateAsyncOperationKey = function generateAsyncOperationKey(descriptorId)
   var baseAsyncOperationKey = descriptorId;
 
   if (!descriptorId || !(0, _lodash.isString)(descriptorId)) {
-    config.logger.exceptionsCallback('A descriptorId string to create the async operation key was not provided');
+    config.logger.exceptionsCallback("A descriptorId string to create the async operation key was not provided");
   }
 
   if (!(0, _lodash.isEmpty)(params)) {
     var sortedParamValues = (0, _lodash.values)(params);
-    sortedParamValues.forEach(function (entry) {
+    sortedParamValues = sortedParamValues.map(function (entry) {
       if ((0, _lodash.isArray)(entry)) {
-        entry.sort();
+        return _toConsumableArray(entry).sort();
       }
+
+      return entry;
     });
     sortedParamValues.sort();
-    baseAsyncOperationKey = "".concat(baseAsyncOperationKey, "_").concat(sortedParamValues.join('_'));
+    baseAsyncOperationKey = "".concat(baseAsyncOperationKey, "_").concat(sortedParamValues.join("_"));
   }
 
   return baseAsyncOperationKey;
@@ -86,7 +96,7 @@ var getAsyncOperationDescriptor = function getAsyncOperationDescriptor(asyncOper
 
   if (asyncOperationDescriptor.debug) {
     config.logger.verboseLoggingCallback("Inside getAsyncOperationDescriptor for ".concat(descriptorId));
-    config.logger.infoLoggingCallback('getAsyncOperationDescriptor [Data Snapshot]:', {
+    config.logger.infoLoggingCallback("getAsyncOperationDescriptor [Data Snapshot]:", {
       asyncOperationDescriptors: asyncOperationDescriptors,
       asyncOperationDescriptor: asyncOperationDescriptor
     });
